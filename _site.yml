@@ -1,9 +1,9 @@
-name: "my-website"
+name: "Learn R"
 output_dir: "."
 navbar:
   title: "My Website"
   left:
   - text: "Home"
     href: index.html
-  - text: "About"
-    href: about.html
+  - text: "Learn R"
+    href: LearnR.html

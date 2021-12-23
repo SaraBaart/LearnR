@@ -1,8 +1,9 @@
 ---
-title: "index"
+title: "Learn R"
+author: "Sara Baart, Department of Biostatistics, Erasmus MC"
 output: html_document
 ---
 
-This is my website 
+Learn  R here!
 
-*[Here is the output](LearnR.html)
+[Start with the basics](LearnR.html)

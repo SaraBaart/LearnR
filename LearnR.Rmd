@@ -7,6 +7,26 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+## Packages
+
+For a lot of R functions, additional libraries need to be loaded.
+
+This can be done with:
+
+```{r echo = T, eval=FALSE}
+library(lattice)
+```
+
+Sometimes the library needs to be installed first:
+
+```{r echo = T, eval=FALSE}
+install.packages(lattice)
+library(lattice)
+```
+
+*Installing* a library only needs to be done once. *Loading* the library must be done every time you start R. 
+
+
 ## R Markdown
 
 This is an R Markdown document3. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
