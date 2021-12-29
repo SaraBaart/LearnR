@@ -1,9 +1,11 @@
 name: "Learn R"
 output_dir: "."
 navbar:
-  title: "My Website"
-  left:
-  - text: "Home"
-    href: index.html
-  - text: "Learn R"
-    href: LearnR.html
+    title: "Tutorial on R"
+    left:
+    - text: "Home"
+      href: index.html
+    - text: "Getting started"
+      href: LearnR.html
+    - text: "Advanced options"
+      href: LearnR2.html

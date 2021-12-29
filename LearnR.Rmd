@@ -1,13 +1,17 @@
 ---
 title: "Getting started"
-output: html_document
+output: 
+  html_document:
+    toc: TRUE
+    toc_float: TRUE
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
+Once you have installed R and Rstudio, we can get started with R!
 
-# Packages
+## Packages
 
 For a lot of R functions, additional libraries need to be loaded.
 
@@ -28,9 +32,10 @@ library(lattice)
 
 
 
-# Importing data sets
+## Importing data sets
 
 How do I get my data in R?
+
 ### SPSS file
 
 1) Load the library foreign
@@ -60,12 +65,13 @@ data <- read_excel("C:/Documents/data.xlsx")
 
 **Note 2** Pay attention to the name you give your data set. You want it to be distinct, but don't make it too long!
 
-## Importing data with the menu
+
+### Importing data with the menu
 Data can also be loaded via the menu. Go to File -> Import Dataset -> choose your filetype.
 
 
 
-# Graphs
+## Graphs
 Let's explore a dataset graphically.
 
 We will use a standard data set available in R (mtcars).
