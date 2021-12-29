@@ -109,3 +109,54 @@ plot(mtcars$mpg ~ mtcars$disp, xlab = "Disp", ylab = "Mpg",
      xlim = c(75, 475), ylim = c(10, 35),
      main = "Scatterplot Mpg - Disp", col = "red", pch = 20, cex = 1.5)
 ```
+
+
+
+## Descriptives
+
+Now we look at the dataset some more.
+
+Obtain the summaries of each variable
+```{r echo = T, eval=T}
+summary(mtcars)
+```
+
+Obtain the summaries of one variable
+```{r echo = T, eval=T}
+summary(mtcars$mpg)
+```
+
+Look at the type of variables in the data:
+
+Numeric - Factor - character - Integer - etc
+
+```{r echo = T, eval=T}
+str(mtcars)
+```
+
+Obtain descriptives for continuous variables
+
+mean (sd)
+```{r echo = T, eval=T}
+mean(mtcars$mpg)
+sd(mtcars$mpg)
+```
+
+median (IQR)
+```{r echo = T, eval=T}
+median(mtcars$mpg)
+quantile(mtcars$mpg, probs = c(0.25, 0.75))
+```
+
+
+Obtain descriptives for categorical variables
+
+Frequencies
+```{r echo = T, eval=T}
+table(mtcars$cyl)
+```
+
+Crosstabs
+```{r echo = T, eval=T}
+table(mtcars$cyl, mtcars$vs)
+```
