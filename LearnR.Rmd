@@ -1,5 +1,5 @@
 ---
-title: "LearnR"
+title: "Getting started"
 output: html_document
 ---
 
@@ -7,7 +7,7 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## Packages
+# Packages
 
 For a lot of R functions, additional libraries need to be loaded.
 
@@ -27,22 +27,79 @@ library(lattice)
 *Installing* a library only needs to be done once. *Loading* the library must be done every time you start R. 
 
 
-## R Markdown
 
-This is an R Markdown document3. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+# Importing data sets
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+How do I get my data in R?
+### SPSS file
 
-```{r cars}
-summary(cars)
+1) Load the library foreign
+```{r echo = T, eval=FALSE}
+library(foreign)
 ```
 
-## Including Plots
-
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
+2) Load data from spss using the function read.spss
+```{r echo = T, eval=FALSE}
+data <- read.spss("C:/Documents/data.sav", to.data.frame = TRUE)
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+### Excel file
+
+1) Load the library readxl
+```{r echo = T, eval=FALSE}
+library(readxl)
+```
+
+2) Load data from spss using the function read_excel
+```{r echo = T, eval=FALSE}
+data <- read_excel("C:/Documents/data.xlsx")
+```
+
+
+**Note 1** For R to recognize the folder you need to use forward slashes (`/`) instead of backward slashes (`\`)
+
+**Note 2** Pay attention to the name you give your data set. You want it to be distinct, but don't make it too long!
+
+## Importing data with the menu
+Data can also be loaded via the menu. Go to File -> Import Dataset -> choose your filetype.
+
+
+
+# Graphs
+Let's explore a dataset graphically.
+
+We will use a standard data set available in R (mtcars).
+```{r echo = T, eval=T}
+data(mtcars)
+```
+
+With the function `head`, we can print the first couple of rows; check out the names of the variables and the first entries.
+
+```{r echo = T, eval=T}
+head(mtcars)
+```
+
+Make a simple histogram (mpg = continuous variable)
+
+```{r echo = T, eval=T}
+hist(mtcars$mpg)
+```
+
+Make a simple scatter plot (mpg & disp = continuous variables)
+```{r echo = T, eval=T}
+plot(mtcars$mpg ~ mtcars$disp)
+```
+
+Make a simple boxplot (mpg = continuous variable, cyl = categorical variable)
+```{r echo = T, eval=T}
+boxplot(mtcars$mpg ~ mtcars$cyl)
+```
+
+
+Improve the scatterplot by changing the color, adding a title, etc. 
+
+```{r echo = T, eval=T}
+plot(mtcars$mpg ~ mtcars$disp, xlab = "Disp", ylab = "Mpg", 
+     xlim = c(75, 475), ylim = c(10, 35),
+     main = "Scatterplot Mpg - Disp", col = "red", pch = 20, cex = 1.5)
+```

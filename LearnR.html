@@ -11,7 +11,7 @@
 
 
 
-<title>LearnR</title>
+<title>Getting started</title>
 
 <script src="site_libs/header-attrs-2.11/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
@@ -259,13 +259,13 @@ $(document).ready(function () {
 
 
 
-<h1 class="title toc-ignore">LearnR</h1>
+<h1 class="title toc-ignore">Getting started</h1>
 
 </div>
 
 
-<div id="packages" class="section level2">
-<h2>Packages</h2>
+<div id="packages" class="section level1">
+<h1>Packages</h1>
 <p>For a lot of R functions, additional libraries need to be loaded.</p>
 <p>This can be done with:</p>
 <pre class="r"><code>library(lattice)</code></pre>
@@ -274,24 +274,63 @@ $(document).ready(function () {
 library(lattice)</code></pre>
 <p><em>Installing</em> a library only needs to be done once. <em>Loading</em> the library must be done every time you start R.</p>
 </div>
-<div id="r-markdown" class="section level2">
-<h2>R Markdown</h2>
-<p>This is an R Markdown document3. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <a href="http://rmarkdown.rstudio.com" class="uri">http://rmarkdown.rstudio.com</a>.</p>
-<p>When you click the <strong>Knit</strong> button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:</p>
-<pre class="r"><code>summary(cars)</code></pre>
-<pre><code>##      speed           dist       
-##  Min.   : 4.0   Min.   :  2.00  
-##  1st Qu.:12.0   1st Qu.: 26.00  
-##  Median :15.0   Median : 36.00  
-##  Mean   :15.4   Mean   : 42.98  
-##  3rd Qu.:19.0   3rd Qu.: 56.00  
-##  Max.   :25.0   Max.   :120.00</code></pre>
+<div id="importing-data-sets" class="section level1">
+<h1>Importing data sets</h1>
+<p>How do I get my data in R? ### SPSS file</p>
+<ol style="list-style-type: decimal">
+<li>Load the library foreign</li>
+</ol>
+<pre class="r"><code>library(foreign)</code></pre>
+<ol start="2" style="list-style-type: decimal">
+<li>Load data from spss using the function read.spss</li>
+</ol>
+<pre class="r"><code>data &lt;- read.spss(&quot;C:/Documents/data.sav&quot;, to.data.frame = TRUE)</code></pre>
+<div id="excel-file" class="section level3">
+<h3>Excel file</h3>
+<ol style="list-style-type: decimal">
+<li>Load the library readxl</li>
+</ol>
+<pre class="r"><code>library(readxl)</code></pre>
+<ol start="2" style="list-style-type: decimal">
+<li>Load data from spss using the function read_excel</li>
+</ol>
+<pre class="r"><code>data &lt;- read_excel(&quot;C:/Documents/data.xlsx&quot;)</code></pre>
+<p><strong>Note 1</strong> For R to recognize the folder you need to use forward slashes (<code>/</code>) instead of backward slashes (<code>\</code>)</p>
+<p><strong>Note 2</strong> Pay attention to the name you give your data set. You want it to be distinct, but don’t make it too long!</p>
 </div>
-<div id="including-plots" class="section level2">
-<h2>Including Plots</h2>
-<p>You can also embed plots, for example:</p>
-<p><img src="LearnR_files/figure-html/pressure-1.png" width="672" /></p>
-<p>Note that the <code>echo = FALSE</code> parameter was added to the code chunk to prevent printing of the R code that generated the plot.</p>
+<div id="importing-data-with-the-menu" class="section level2">
+<h2>Importing data with the menu</h2>
+<p>Data can also be loaded via the menu. Go to File -&gt; Import Dataset -&gt; choose your filetype.</p>
+</div>
+</div>
+<div id="graphs" class="section level1">
+<h1>Graphs</h1>
+<p>Let’s explore a dataset graphically.</p>
+<p>We will use a standard data set available in R (mtcars).</p>
+<pre class="r"><code>data(mtcars)</code></pre>
+<p>With the function <code>head</code>, we can print the first couple of rows; check out the names of the variables and the first entries.</p>
+<pre class="r"><code>head(mtcars)</code></pre>
+<pre><code>##                    mpg cyl disp  hp drat    wt  qsec vs am gear carb
+## Mazda RX4         21.0   6  160 110 3.90 2.620 16.46  0  1    4    4
+## Mazda RX4 Wag     21.0   6  160 110 3.90 2.875 17.02  0  1    4    4
+## Datsun 710        22.8   4  108  93 3.85 2.320 18.61  1  1    4    1
+## Hornet 4 Drive    21.4   6  258 110 3.08 3.215 19.44  1  0    3    1
+## Hornet Sportabout 18.7   8  360 175 3.15 3.440 17.02  0  0    3    2
+## Valiant           18.1   6  225 105 2.76 3.460 20.22  1  0    3    1</code></pre>
+<p>Make a simple histogram (mpg = continuous variable)</p>
+<pre class="r"><code>hist(mtcars$mpg)</code></pre>
+<p><img src="LearnR_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
+<p>Make a simple scatter plot (mpg &amp; disp = continuous variables)</p>
+<pre class="r"><code>plot(mtcars$mpg ~ mtcars$disp)</code></pre>
+<p><img src="LearnR_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
+<p>Make a simple boxplot (mpg = continuous variable, cyl = categorical variable)</p>
+<pre class="r"><code>boxplot(mtcars$mpg ~ mtcars$cyl)</code></pre>
+<p><img src="LearnR_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
+<p>Improve the scatterplot by changing the color, adding a title, etc.</p>
+<pre class="r"><code>plot(mtcars$mpg ~ mtcars$disp, xlab = &quot;Disp&quot;, ylab = &quot;Mpg&quot;, 
+     xlim = c(75, 475), ylim = c(10, 35),
+     main = &quot;Scatterplot Mpg - Disp&quot;, col = &quot;red&quot;, pch = 20, cex = 1.5)</code></pre>
+<p><img src="LearnR_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
 </div>
 
 
