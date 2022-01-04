@@ -687,12 +687,33 @@ summary(aov1)</code></pre>
 ## 
 ## data:  disp by gear.factor
 ## Kruskal-Wallis chi-squared = 16.578, df = 2, p-value = 0.0002513</code></pre>
-<p>The groups of gear are also significantly different for disp values.    </p>
+<p>The groups of gear are also significantly different for disp values.</p>
+<p> </p>
+</div>
+<div id="correlations" class="section level4">
+<h4>Correlations</h4>
+<p>Correlations are used for two continuous variables. We already made a scatterplot of “mpg” and “disp”.</p>
+<pre class="r"><code>plot(data$mpg ~ data$disp)</code></pre>
+<p><img src="LearnR_files/figure-html/unnamed-chunk-41-1.png" width="672" /> There seems to be a strong negative correlation between the variables. Is it significant?</p>
+<pre class="r"><code>cor.test(data$disp, data$mpg, method = &quot;spearman&quot;)</code></pre>
+<pre><code>## Warning in cor.test.default(data$disp, data$mpg, method = &quot;spearman&quot;): Cannot
+## compute exact p-value with ties</code></pre>
+<pre><code>## 
+##  Spearman&#39;s rank correlation rho
+## 
+## data:  data$disp and data$mpg
+## S = 10415, p-value = 6.37e-13
+## alternative hypothesis: true rho is not equal to 0
+## sample estimates:
+##        rho 
+## -0.9088824</code></pre>
+<p>Since “mpg” is not normally distributed, we use the <code>method = "spearman"</code> version of the test. For the Pearson correlation, use <code>method = "pearson"</code>. The correlation is -0.9 and highly significant.</p>
 </div>
 </div>
 <div id="regression" class="section level2">
 <h2>Regression</h2>
-<p>COming soon!    </p>
+<p>Coming soon!</p>
+<p>   </p>
 </div>
 <div id="saving" class="section level2">
 <h2>Saving your work</h2>
