@@ -8,6 +8,7 @@ output: html_document
 library(knitr)
 opts_chunk$set(echo = TRUE)
 ```
+&nbsp;
 
 ### Learn  R here!
 
@@ -20,14 +21,15 @@ Good luck!
 Sara Baart - 29-12-2021
 s.baart@erasmusmc.nl
 
-
+&nbsp;
+&nbsp;
 
 ## Installing the software
 ### R
 R is free to install and can be downloaded here: https://www.r-project.org/. Click on **download R** and choose a CRAN mirror (Netherlands for example, but this doesn't really matter) and install R for your operating system.
 
 ### RStudio
-Although R is the software that does all the calculations, we will work with the program RStudio. You can download RStudio here: https://www.rstudio.com/products/rstudio/download/ (choose the free desktop version).
+You also need to install Rstudio. R and Rstudio are connected with each other; R does the calculations in the background and we work with Rstudio, which is more user friendly. You can download RStudio here: https://www.rstudio.com/products/rstudio/download/ (choose the free desktop version).
 
 When you have installed it, Rstudio should look something like this:
 
@@ -35,9 +37,28 @@ When you have installed it, Rstudio should look something like this:
 include_graphics("Rstudio.jpg")
 ```
 
+
+The Rstudio screen consists of four panes:
+
+```{r , echo = FALSE}
+include_graphics("Rstudio2.jpg")
+```
+&nbsp;
+&nbsp;
+
+1) This is your code editor or script. Here you type your code; you can save this file as an .R document.
+
+2) The environment. All your R objects are displayed here (datasets, models, vectors, functions, etc.)
+
+3) The console, where you find the results of your analyses.
+
+4) Plots are displayed here. The tabs packages and help provide information about packages and functions.
+
+&nbsp;
+
 Now you are ready to start with the tutorials:
 
-## Tutorials
+### Tutorials
 [Start with the basics](LearnR.html)
 
 [Advanced options](LearnR2.html)

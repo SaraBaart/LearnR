@@ -343,8 +343,10 @@ div.tocify {
 </div>
 
 
-<p>Once you have installed R and Rstudio, we can get started with R!</p>
-<p><strong>IMPORTANT</strong> : R is case sensitive. This means that <code>mean(variable)</code> is not the same as <code>Mean(variable)</code>!</p>
+<p>Once you have installed R and Rstudio, we can get started with R!  </p>
+<p><strong>IMPORTANT</strong> : R is case sensitive. This means that <code>mean(variable)</code> is not the same as <code>Mean(variable)</code>!  </p>
+<div id="overview" class="section level2">
+<h2>Overview</h2>
 <p>The topics in this document are:</p>
 <ul>
 <li><p><a href="#packages">Packages</a></p></li>
@@ -353,8 +355,11 @@ div.tocify {
 <li><p><a href="#graphs">Graphs</a></p></li>
 <li><p><a href="#descriptives">Descriptives</a></p></li>
 <li><p><a href="#tests">Statistical tests</a></p></li>
+<li><p><a href="#regression">Regression</a></p></li>
+<li><p><a href="#saving">Save your work</a></p></li>
 </ul>
 <p>   </p>
+</div>
 <div id="packages" class="section level2">
 <h2>Packages</h2>
 <p>For a lot of R functions, additional libraries need to be loaded.</p>
@@ -369,7 +374,6 @@ library(lattice)</code></pre>
 <div id="importing" class="section level2">
 <h2>Importing data sets</h2>
 <p>How do I get my data in R?</p>
-<p> </p>
 <div id="spss-file" class="section level4">
 <h4>SPSS file</h4>
 <ol style="list-style-type: decimal">
@@ -392,6 +396,7 @@ library(lattice)</code></pre>
 <li>Load data from spss using the function read_excel</li>
 </ol>
 <pre class="r"><code>data &lt;- read_excel(&quot;C:/Documents/data.xlsx&quot;)</code></pre>
+<p> </p>
 <p><strong>Note 1</strong> For R to recognize the folder you need to use forward slashes (<code>/</code>) instead of backward slashes (<code>\</code>)</p>
 <p><strong>Note 2</strong> Pay attention to the name you give your data set. You want it to be distinct, but don’t make it too long!</p>
 <p> </p>
@@ -484,7 +489,6 @@ data &lt;- mtcars</code></pre>
 </div>
 <div id="basic-data-manipulation" class="section level4">
 <h4>Basic data manipulation</h4>
-<p> </p>
 <div id="rename-variables" class="section level5">
 <h5>Rename variables</h5>
 <pre class="r"><code>names(data)[names(data) == &quot;carb&quot;] &lt;- &quot;CARB&quot;</code></pre>
@@ -492,8 +496,8 @@ data &lt;- mtcars</code></pre>
 </div>
 <div id="make-a-subset-of-your-data" class="section level5">
 <h5>Make a subset of your data</h5>
-<p><strong>Note </strong> Create a new data set with a new name. Otherwise you lose your data.</p>
-<p>Remove observations with missings in “mpg” and “cyl”</p>
+<p><strong>Tip! </strong> Create a new data set with a new name. Otherwise you might lose important information in your data.</p>
+<p>Remove observations with missings (<code>NA</code>) in “mpg” and “cyl”</p>
 <pre class="r"><code>data2 &lt;- subset(data, !is.na(data$mpg) &amp; !is.na(data$cyl))</code></pre>
 <p> </p>
 </div>
@@ -583,9 +587,9 @@ plot(data$mpg ~ mtcars$disp, xlab = &quot;Disp&quot;, ylab = &quot;Mpg&quot;,
 </div>
 <div id="tests" class="section level2">
 <h2>Statistical tests</h2>
-<div id="t-test" class="section level5">
-<h5>t-test</h5>
-<p>With a t test, we compare a normally distributed continuous variable between two groups. In the data “am” is a grouping variable (0/1).</p>
+<div id="t-test" class="section level4">
+<h4>T-test</h4>
+<p>With a t-test, we compare a normally distributed continuous variable between two groups. In the data “am” is a grouping variable (0/1). Let’s explore this variable with <code>table</code>:</p>
 <pre class="r"><code>table(data$am)</code></pre>
 <pre><code>## 
 ##  0  1 
@@ -616,15 +620,83 @@ test$p.value</code></pre>
 <pre><code>## [1] 5.266742e-06</code></pre>
 <p> </p>
 </div>
-<div id="mann-whitney-u-test" class="section level5">
-<h5>Mann-Whitney U test</h5>
-<p>When the continuous variable is not normally distributed, we use the Mann-Whitney U test (or Wilcoxon Rank Sum test). The variable “mpg” is not normally distributed</p>
+<div id="mann-whitney-u-test" class="section level4">
+<h4>Mann-Whitney U test</h4>
+<p>When the continuous variable is not normally distributed, we use the Mann-Whitney U test (or Wilcoxon Rank Sum test). The variable “mpg” is not normally distributed as we can see by the graphs.</p>
 <pre class="r"><code>par(mfrow = c(1,2))
 hist(data$disp)
 qqnorm(data$disp)
 qqline(data$disp, col = &quot;steelblue&quot;)</code></pre>
 <p><img src="LearnR_files/figure-html/unnamed-chunk-32-1.png" width="672" /></p>
+<p>So, we use the code <code>wilcox.test</code></p>
+<pre class="r"><code>wilcox.test(disp ~ am, data = data)</code></pre>
+<pre><code>## 
+##  Wilcoxon rank sum test with continuity correction
+## 
+## data:  disp by am
+## W = 214, p-value = 0.0005493
+## alternative hypothesis: true location shift is not equal to 0</code></pre>
+<p>The p-value is &lt;0.05, so we can reject H0.  </p>
 </div>
+<div id="anova" class="section level4">
+<h4>ANOVA</h4>
+<p>When we want to compare a continuous variable in more than 2 groups, we can use an ANOVA. For this test, we assume that the continuous marker follows a normal distribution. The variable “gear” has three groups:</p>
+<pre class="r"><code>table(data$gear)</code></pre>
+<pre><code>## 
+##  3  4  5 
+## 15 12  5</code></pre>
+<p>We will use ANOVA to test if “drat” is similar over the “gear” groups. We visualize the data first:</p>
+<pre class="r"><code>boxplot(data$drat ~ data$gear)</code></pre>
+<p><img src="LearnR_files/figure-html/unnamed-chunk-35-1.png" width="672" /></p>
+<p>There appears to be a big difference, especially in group 3. For the ANOVA procedure in R it is better if the grouping variable is a “factor” instead of “numeric”, so we make a new variable: gear.factor.</p>
+<pre class="r"><code>str(data$gear)</code></pre>
+<pre><code>##  num [1:32] 4 4 4 3 3 3 3 4 4 4 ...</code></pre>
+<pre class="r"><code>data$gear.factor &lt;- as.factor(data$gear)
+
+str(data$gear.factor)</code></pre>
+<pre><code>##  Factor w/ 3 levels &quot;3&quot;,&quot;4&quot;,&quot;5&quot;: 2 2 2 1 1 1 1 2 2 2 ...</code></pre>
+<pre class="r"><code>aov1 &lt;- aov(drat ~ gear.factor, data = data)
+summary(aov1)</code></pre>
+<pre><code>##             Df Sum Sq Mean Sq F value   Pr(&gt;F)    
+## gear.factor  2  6.133  3.0667   32.59 3.82e-08 ***
+## Residuals   29  2.729  0.0941                     
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<p>The p-value is highly significant. We can perform a post-hoc test, to see which groups are different from each other. With Tukey we adjust the p-value to correct for multiple testing.</p>
+<pre class="r"><code>TukeyHSD(aov1)</code></pre>
+<pre><code>##   Tukey multiple comparisons of means
+##     95% family-wise confidence level
+## 
+## Fit: aov(formula = drat ~ gear.factor, data = data)
+## 
+## $gear.factor
+##           diff        lwr       upr     p adj
+## 4-3  0.9106667  0.6172574 1.2040759 0.0000001
+## 5-3  0.7833333  0.3921210 1.1745457 0.0000856
+## 5-4 -0.1273333 -0.5305858 0.2759191 0.7181847</code></pre>
+<p>Group 3 is indeed different from 4 and 5.  </p>
+</div>
+<div id="kruskal-wallis-test" class="section level4">
+<h4>Kruskal-Wallis test</h4>
+<p>The non-paramtric version of the ANOVA is the Kruskal-Wallis test.</p>
+<pre class="r"><code>boxplot(data$disp ~ data$gear.factor)</code></pre>
+<p><img src="LearnR_files/figure-html/unnamed-chunk-39-1.png" width="672" /></p>
+<pre class="r"><code>kruskal.test(disp ~ gear.factor, data = data)</code></pre>
+<pre><code>## 
+##  Kruskal-Wallis rank sum test
+## 
+## data:  disp by gear.factor
+## Kruskal-Wallis chi-squared = 16.578, df = 2, p-value = 0.0002513</code></pre>
+<p>The groups of gear are also significantly different for disp values.    </p>
+</div>
+</div>
+<div id="regression" class="section level2">
+<h2>Regression</h2>
+<p>COming soon!    </p>
+</div>
+<div id="saving" class="section level2">
+<h2>Saving your work</h2>
+<p>Coming soon!</p>
 </div>
 
 
@@ -676,7 +748,7 @@ $(document).ready(function ()  {
 
     // establish options
     var options = {
-      selectors: "h1,h2,h3",
+      selectors: "h1,h2,h3,h4",
       theme: "bootstrap3",
       context: '.toc-content',
       hashGenerator: function (text) {
