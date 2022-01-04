@@ -12,3 +12,11 @@ knitr::opts_chunk$set(echo = TRUE)
 
 
 Coming soon!
+
+<!-- ## Data manipulation 2 -->
+
+<!-- %5Certain rownumbers or columnnumbers can be accessed using the square brackets `[,]`. -->
+<!-- A number before the comma gives this rownumber. This code gives me the first  -->
+<!-- ```{r echo = T, eval=T} -->
+<!-- mtcars[1,] -->
+<!-- ``` -->

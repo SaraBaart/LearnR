@@ -11,7 +11,27 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 Once you have installed R and Rstudio, we can get started with R!
 
-## Packages
+**IMPORTANT** : R is case sensitive. This means that `mean(variable)` is not the same as `Mean(variable)`!
+
+The topics in this document are:
+
+* [Packages](#packages) 
+
+* [Importing data sets](#importing)
+
+* [Datamanagement](#datamanagement)
+
+* [Graphs](#graphs)
+
+* [Descriptives](#descriptives)
+
+* [Statistical tests](#tests)
+
+&nbsp;
+&nbsp;
+
+## Packages {#packages}
+
 
 For a lot of R functions, additional libraries need to be loaded.
 
@@ -30,13 +50,16 @@ library(lattice)
 
 *Installing* a library only needs to be done once. *Loading* the library must be done every time you start R. 
 
+&nbsp;
+&nbsp;
 
-
-## Importing data sets
+## Importing data sets {#importing}
 
 How do I get my data in R?
 
-### SPSS file
+&nbsp;
+
+#### SPSS file
 
 1) Load the library foreign
 ```{r echo = T, eval=FALSE}
@@ -47,8 +70,9 @@ library(foreign)
 ```{r echo = T, eval=FALSE}
 data <- read.spss("C:/Documents/data.sav", to.data.frame = TRUE)
 ```
+&nbsp;
 
-### Excel file
+#### Excel file
 
 1) Load the library readxl
 ```{r echo = T, eval=FALSE}
@@ -65,98 +89,222 @@ data <- read_excel("C:/Documents/data.xlsx")
 
 **Note 2** Pay attention to the name you give your data set. You want it to be distinct, but don't make it too long!
 
+&nbsp;
 
-### Importing data with the menu
+#### Importing data with the menu
 Data can also be loaded via the menu. Go to File -> Import Dataset -> choose your filetype.
 
+&nbsp;
+&nbsp;
 
+## Datamanagement {#datamanagement}
+We  want to investigate and explore the data set before we perform our analyses. Often we also need to perform some data manipulation steps first.
 
-## Graphs
-Let's explore a dataset graphically.
+#### Explore data
+Let's explore a dataset.
 
-We will use a standard data set available in R (mtcars).
+We will use a standard data set available in R (mtcars). I will name this dataset "data"
 ```{r echo = T, eval=T}
 data(mtcars)
+data <- mtcars
 ```
 
 With the function `head`, we can print the first couple of rows; check out the names of the variables and the first entries.
 
 ```{r echo = T, eval=T}
-head(mtcars)
+head(data)
 ```
+&nbsp;
+
+##### Obtain the summaries of each variable
+The numbers of missings `NA` are also reported.
+```{r echo = T, eval=T}
+summary(data)
+```
+&nbsp;
+
+##### Obtain the summaries of one variable
+With the `$` symbol we access a variable in a data set.
+```{r echo = T, eval=T}
+summary(data$mpg)
+```
+&nbsp;
+
+#####  Obtain the variable names 
+```{r echo = T, eval=T}
+names(data)
+```
+&nbsp;
+
+#####  Look at the type of variables in the data:
+
+Numeric - Factor - character - Integer - etc
+```{r echo = T, eval=T}
+str(data)
+```
+&nbsp;
+
+#### Basic data manipulation
+&nbsp;
+
+##### Rename variables
+```{r echo = T, eval=T}
+names(data)[names(data) == "carb"] <- "CARB"
+```
+&nbsp;
+
+##### Make a subset of your data
+**Note ** Create a new data set with a new name. Otherwise you lose your data.
+
+Remove observations with missings in "mpg" and "cyl"
+```{r echo = T, eval=T}
+data2 <- subset(data, !is.na(data$mpg) & !is.na(data$cyl))
+```
+&nbsp;
+
+#####  Remove observation above a certain threshold
+Make a new dataset, including only mpg values > 20. (Don't forget the comma in the code!)
+```{r echo = T, eval=T}
+data2 <- data[data$mpg > 20, ]
+```
+&nbsp;
+
+##### Remove duplicates
+This can be used if there are multiple measurement per patient, but you want to keep only the first.
+```{r echo = T, eval=T}
+data.short <- data[!duplicated(data$gear),]
+```
+&nbsp;
+
+##### Remove variables
+```{r echo = T, eval=T}
+data2 <- subset(data, select = -c(mpg, cyl))
+```
+&nbsp;
+
+#####  Keep variables
+```{r echo = T, eval=T}
+data2 <- subset(data, select = c(mpg, cyl))
+```
+&nbsp;
+&nbsp;
+
+## Graphs {#graphs}
 
 Make a simple histogram (mpg = continuous variable)
 
 ```{r echo = T, eval=T}
-hist(mtcars$mpg)
+hist(data$mpg)
 ```
 
 Make a simple scatter plot (mpg & disp = continuous variables)
 ```{r echo = T, eval=T}
-plot(mtcars$mpg ~ mtcars$disp)
+plot(data$mpg ~ data$disp)
 ```
 
 Make a simple boxplot (mpg = continuous variable, cyl = categorical variable)
 ```{r echo = T, eval=T}
-boxplot(mtcars$mpg ~ mtcars$cyl)
+boxplot(data$mpg ~ data$cyl)
 ```
 
 
 Improve the scatterplot by changing the color, adding a title, etc. 
 
 ```{r echo = T, eval=T}
-plot(mtcars$mpg ~ mtcars$disp, xlab = "Disp", ylab = "Mpg", 
+plot(data$mpg ~ mtcars$disp, xlab = "Disp", ylab = "Mpg", 
      xlim = c(75, 475), ylim = c(10, 35),
      main = "Scatterplot Mpg - Disp", col = "red", pch = 20, cex = 1.5)
 ```
 
-
-
-## Descriptives
-
-Now we look at the dataset some more.
-
-Obtain the summaries of each variable
-```{r echo = T, eval=T}
-summary(mtcars)
-```
-
-Obtain the summaries of one variable
-```{r echo = T, eval=T}
-summary(mtcars$mpg)
-```
-
-Look at the type of variables in the data:
-
-Numeric - Factor - character - Integer - etc
+For two plots next to each other we can use the function `par(mfrow = c(1,2))`
 
 ```{r echo = T, eval=T}
-str(mtcars)
+par(mfrow = c(1,2))
+plot(data$mpg ~ data$disp)
+plot(data$mpg ~ mtcars$disp, xlab = "Disp", ylab = "Mpg", 
+     xlim = c(75, 475), ylim = c(10, 35),
+     main = "Scatterplot Mpg - Disp", col = "red", pch = 20, cex = 1.5)
 ```
 
-Obtain descriptives for continuous variables
+&nbsp;
+
+&nbsp;
+
+## Descriptives {#descriptives}
+
+##### Obtain descriptives for continuous variables
 
 mean (sd)
 ```{r echo = T, eval=T}
-mean(mtcars$mpg)
-sd(mtcars$mpg)
+mean(data$mpg)
+sd(data$mpg)
 ```
 
 median (IQR)
 ```{r echo = T, eval=T}
-median(mtcars$mpg)
-quantile(mtcars$mpg, probs = c(0.25, 0.75))
+median(data$mpg)
+quantile(data$mpg, probs = c(0.25, 0.75))
 ```
+&nbsp;
 
-
-Obtain descriptives for categorical variables
+##### Obtain descriptives for categorical variables
 
 Frequencies
 ```{r echo = T, eval=T}
-table(mtcars$cyl)
+table(data$cyl)
 ```
 
 Crosstabs
 ```{r echo = T, eval=T}
-table(mtcars$cyl, mtcars$vs)
+table(data$cyl, data$vs)
 ```
+
+&nbsp;
+&nbsp;
+
+## Statistical tests {#tests}
+
+
+##### t-test
+With a t test, we compare a normally distributed continuous variable between two groups. 
+In the data "am" is a grouping variable (0/1). 
+```{r echo = T, eval=T}
+table(data$am)
+```
+
+"drat" is a continuous variable. Is it normally distributed?
+
+
+```{r echo = T, eval=T}
+par(mfrow = c(1,2))
+hist(data$drat)
+qqnorm(data$drat)
+qqline(data$drat, col = "steelblue")
+```
+
+This looks pretty normal, so we can use a t-test to analyze these data. 
+
+```{r echo = T, eval=T}
+t.test(drat ~ am, data = data)
+```
+
+The output provides us with the p-value of the test, but also the 95\% confidence interval and the mean in both groups. 
+
+It is possible to save the test as an r object (named "test") and extract the p-value from it.
+```{r echo = T, eval=T}
+test <- t.test(drat ~ am, data = data)
+test$p.value
+```
+&nbsp;
+
+##### Mann-Whitney U test
+When the continuous variable is not normally distributed, we use the Mann-Whitney U test (or Wilcoxon Rank Sum test). The variable "mpg" is not normally distributed
+
+```{r echo = T, eval=T}
+par(mfrow = c(1,2))
+hist(data$disp)
+qqnorm(data$disp)
+qqline(data$disp, col = "steelblue")
+```
+
+

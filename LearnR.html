@@ -344,6 +344,17 @@ div.tocify {
 
 
 <p>Once you have installed R and Rstudio, we can get started with R!</p>
+<p><strong>IMPORTANT</strong> : R is case sensitive. This means that <code>mean(variable)</code> is not the same as <code>Mean(variable)</code>!</p>
+<p>The topics in this document are:</p>
+<ul>
+<li><p><a href="#packages">Packages</a></p></li>
+<li><p><a href="#importing">Importing data sets</a></p></li>
+<li><p><a href="#datamanagement">Datamanagement</a></p></li>
+<li><p><a href="#graphs">Graphs</a></p></li>
+<li><p><a href="#descriptives">Descriptives</a></p></li>
+<li><p><a href="#tests">Statistical tests</a></p></li>
+</ul>
+<p>   </p>
 <div id="packages" class="section level2">
 <h2>Packages</h2>
 <p>For a lot of R functions, additional libraries need to be loaded.</p>
@@ -353,12 +364,14 @@ div.tocify {
 <pre class="r"><code>install.packages(lattice)
 library(lattice)</code></pre>
 <p><em>Installing</em> a library only needs to be done once. <em>Loading</em> the library must be done every time you start R.</p>
+<p>   </p>
 </div>
-<div id="importing-data-sets" class="section level2">
+<div id="importing" class="section level2">
 <h2>Importing data sets</h2>
 <p>How do I get my data in R?</p>
-<div id="spss-file" class="section level3">
-<h3>SPSS file</h3>
+<p> </p>
+<div id="spss-file" class="section level4">
+<h4>SPSS file</h4>
 <ol style="list-style-type: decimal">
 <li>Load the library foreign</li>
 </ol>
@@ -367,9 +380,10 @@ library(lattice)</code></pre>
 <li>Load data from spss using the function read.spss</li>
 </ol>
 <pre class="r"><code>data &lt;- read.spss(&quot;C:/Documents/data.sav&quot;, to.data.frame = TRUE)</code></pre>
+<p> </p>
 </div>
-<div id="excel-file" class="section level3">
-<h3>Excel file</h3>
+<div id="excel-file" class="section level4">
+<h4>Excel file</h4>
 <ol style="list-style-type: decimal">
 <li>Load the library readxl</li>
 </ol>
@@ -380,19 +394,25 @@ library(lattice)</code></pre>
 <pre class="r"><code>data &lt;- read_excel(&quot;C:/Documents/data.xlsx&quot;)</code></pre>
 <p><strong>Note 1</strong> For R to recognize the folder you need to use forward slashes (<code>/</code>) instead of backward slashes (<code>\</code>)</p>
 <p><strong>Note 2</strong> Pay attention to the name you give your data set. You want it to be distinct, but don’t make it too long!</p>
+<p> </p>
 </div>
-<div id="importing-data-with-the-menu" class="section level3">
-<h3>Importing data with the menu</h3>
+<div id="importing-data-with-the-menu" class="section level4">
+<h4>Importing data with the menu</h4>
 <p>Data can also be loaded via the menu. Go to File -&gt; Import Dataset -&gt; choose your filetype.</p>
+<p>   </p>
 </div>
 </div>
-<div id="graphs" class="section level2">
-<h2>Graphs</h2>
-<p>Let’s explore a dataset graphically.</p>
-<p>We will use a standard data set available in R (mtcars).</p>
-<pre class="r"><code>data(mtcars)</code></pre>
+<div id="datamanagement" class="section level2">
+<h2>Datamanagement</h2>
+<p>We want to investigate and explore the data set before we perform our analyses. Often we also need to perform some data manipulation steps first.</p>
+<div id="explore-data" class="section level4">
+<h4>Explore data</h4>
+<p>Let’s explore a dataset.</p>
+<p>We will use a standard data set available in R (mtcars). I will name this dataset “data”</p>
+<pre class="r"><code>data(mtcars)
+data &lt;- mtcars</code></pre>
 <p>With the function <code>head</code>, we can print the first couple of rows; check out the names of the variables and the first entries.</p>
-<pre class="r"><code>head(mtcars)</code></pre>
+<pre class="r"><code>head(data)</code></pre>
 <pre><code>##                    mpg cyl disp  hp drat    wt  qsec vs am gear carb
 ## Mazda RX4         21.0   6  160 110 3.90 2.620 16.46  0  1    4    4
 ## Mazda RX4 Wag     21.0   6  160 110 3.90 2.875 17.02  0  1    4    4
@@ -400,26 +420,11 @@ library(lattice)</code></pre>
 ## Hornet 4 Drive    21.4   6  258 110 3.08 3.215 19.44  1  0    3    1
 ## Hornet Sportabout 18.7   8  360 175 3.15 3.440 17.02  0  0    3    2
 ## Valiant           18.1   6  225 105 2.76 3.460 20.22  1  0    3    1</code></pre>
-<p>Make a simple histogram (mpg = continuous variable)</p>
-<pre class="r"><code>hist(mtcars$mpg)</code></pre>
-<p><img src="LearnR_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
-<p>Make a simple scatter plot (mpg &amp; disp = continuous variables)</p>
-<pre class="r"><code>plot(mtcars$mpg ~ mtcars$disp)</code></pre>
-<p><img src="LearnR_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
-<p>Make a simple boxplot (mpg = continuous variable, cyl = categorical variable)</p>
-<pre class="r"><code>boxplot(mtcars$mpg ~ mtcars$cyl)</code></pre>
-<p><img src="LearnR_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
-<p>Improve the scatterplot by changing the color, adding a title, etc.</p>
-<pre class="r"><code>plot(mtcars$mpg ~ mtcars$disp, xlab = &quot;Disp&quot;, ylab = &quot;Mpg&quot;, 
-     xlim = c(75, 475), ylim = c(10, 35),
-     main = &quot;Scatterplot Mpg - Disp&quot;, col = &quot;red&quot;, pch = 20, cex = 1.5)</code></pre>
-<p><img src="LearnR_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
-</div>
-<div id="descriptives" class="section level2">
-<h2>Descriptives</h2>
-<p>Now we look at the dataset some more.</p>
-<p>Obtain the summaries of each variable</p>
-<pre class="r"><code>summary(mtcars)</code></pre>
+<p> </p>
+<div id="obtain-the-summaries-of-each-variable" class="section level5">
+<h5>Obtain the summaries of each variable</h5>
+<p>The numbers of missings <code>NA</code> are also reported.</p>
+<pre class="r"><code>summary(data)</code></pre>
 <pre><code>##       mpg             cyl             disp             hp       
 ##  Min.   :10.40   Min.   :4.000   Min.   : 71.1   Min.   : 52.0  
 ##  1st Qu.:15.43   1st Qu.:4.000   1st Qu.:120.8   1st Qu.: 96.5  
@@ -441,13 +446,27 @@ library(lattice)</code></pre>
 ##  Mean   :0.4062   Mean   :3.688   Mean   :2.812  
 ##  3rd Qu.:1.0000   3rd Qu.:4.000   3rd Qu.:4.000  
 ##  Max.   :1.0000   Max.   :5.000   Max.   :8.000</code></pre>
-<p>Obtain the summaries of one variable</p>
-<pre class="r"><code>summary(mtcars$mpg)</code></pre>
+<p> </p>
+</div>
+<div id="obtain-the-summaries-of-one-variable" class="section level5">
+<h5>Obtain the summaries of one variable</h5>
+<p>With the <code>$</code> symbol we access a variable in a data set.</p>
+<pre class="r"><code>summary(data$mpg)</code></pre>
 <pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
 ##   10.40   15.43   19.20   20.09   22.80   33.90</code></pre>
-<p>Look at the type of variables in the data:</p>
+<p> </p>
+</div>
+<div id="obtain-the-variable-names" class="section level5">
+<h5>Obtain the variable names</h5>
+<pre class="r"><code>names(data)</code></pre>
+<pre><code>##  [1] &quot;mpg&quot;  &quot;cyl&quot;  &quot;disp&quot; &quot;hp&quot;   &quot;drat&quot; &quot;wt&quot;   &quot;qsec&quot; &quot;vs&quot;   &quot;am&quot;   &quot;gear&quot;
+## [11] &quot;carb&quot;</code></pre>
+<p> </p>
+</div>
+<div id="look-at-the-type-of-variables-in-the-data" class="section level5">
+<h5>Look at the type of variables in the data:</h5>
 <p>Numeric - Factor - character - Integer - etc</p>
-<pre class="r"><code>str(mtcars)</code></pre>
+<pre class="r"><code>str(data)</code></pre>
 <pre><code>## &#39;data.frame&#39;:    32 obs. of  11 variables:
 ##  $ mpg : num  21 21 22.8 21.4 18.7 18.1 14.3 24.4 22.8 19.2 ...
 ##  $ cyl : num  6 6 4 6 8 6 8 4 4 6 ...
@@ -460,31 +479,152 @@ library(lattice)</code></pre>
 ##  $ am  : num  1 1 1 0 0 0 0 0 0 0 ...
 ##  $ gear: num  4 4 4 3 3 3 3 4 4 4 ...
 ##  $ carb: num  4 4 1 1 2 1 4 2 2 4 ...</code></pre>
-<p>Obtain descriptives for continuous variables</p>
+<p> </p>
+</div>
+</div>
+<div id="basic-data-manipulation" class="section level4">
+<h4>Basic data manipulation</h4>
+<p> </p>
+<div id="rename-variables" class="section level5">
+<h5>Rename variables</h5>
+<pre class="r"><code>names(data)[names(data) == &quot;carb&quot;] &lt;- &quot;CARB&quot;</code></pre>
+<p> </p>
+</div>
+<div id="make-a-subset-of-your-data" class="section level5">
+<h5>Make a subset of your data</h5>
+<p><strong>Note </strong> Create a new data set with a new name. Otherwise you lose your data.</p>
+<p>Remove observations with missings in “mpg” and “cyl”</p>
+<pre class="r"><code>data2 &lt;- subset(data, !is.na(data$mpg) &amp; !is.na(data$cyl))</code></pre>
+<p> </p>
+</div>
+<div id="remove-observation-above-a-certain-threshold" class="section level5">
+<h5>Remove observation above a certain threshold</h5>
+<p>Make a new dataset, including only mpg values &gt; 20. (Don’t forget the comma in the code!)</p>
+<pre class="r"><code>data2 &lt;- data[data$mpg &gt; 20, ]</code></pre>
+<p> </p>
+</div>
+<div id="remove-duplicates" class="section level5">
+<h5>Remove duplicates</h5>
+<p>This can be used if there are multiple measurement per patient, but you want to keep only the first.</p>
+<pre class="r"><code>data.short &lt;- data[!duplicated(data$gear),]</code></pre>
+<p> </p>
+</div>
+<div id="remove-variables" class="section level5">
+<h5>Remove variables</h5>
+<pre class="r"><code>data2 &lt;- subset(data, select = -c(mpg, cyl))</code></pre>
+<p> </p>
+</div>
+<div id="keep-variables" class="section level5">
+<h5>Keep variables</h5>
+<pre class="r"><code>data2 &lt;- subset(data, select = c(mpg, cyl))</code></pre>
+<p>   </p>
+</div>
+</div>
+</div>
+<div id="graphs" class="section level2">
+<h2>Graphs</h2>
+<p>Make a simple histogram (mpg = continuous variable)</p>
+<pre class="r"><code>hist(data$mpg)</code></pre>
+<p><img src="LearnR_files/figure-html/unnamed-chunk-19-1.png" width="672" /></p>
+<p>Make a simple scatter plot (mpg &amp; disp = continuous variables)</p>
+<pre class="r"><code>plot(data$mpg ~ data$disp)</code></pre>
+<p><img src="LearnR_files/figure-html/unnamed-chunk-20-1.png" width="672" /></p>
+<p>Make a simple boxplot (mpg = continuous variable, cyl = categorical variable)</p>
+<pre class="r"><code>boxplot(data$mpg ~ data$cyl)</code></pre>
+<p><img src="LearnR_files/figure-html/unnamed-chunk-21-1.png" width="672" /></p>
+<p>Improve the scatterplot by changing the color, adding a title, etc.</p>
+<pre class="r"><code>plot(data$mpg ~ mtcars$disp, xlab = &quot;Disp&quot;, ylab = &quot;Mpg&quot;, 
+     xlim = c(75, 475), ylim = c(10, 35),
+     main = &quot;Scatterplot Mpg - Disp&quot;, col = &quot;red&quot;, pch = 20, cex = 1.5)</code></pre>
+<p><img src="LearnR_files/figure-html/unnamed-chunk-22-1.png" width="672" /></p>
+<p>For two plots next to each other we can use the function <code>par(mfrow = c(1,2))</code></p>
+<pre class="r"><code>par(mfrow = c(1,2))
+plot(data$mpg ~ data$disp)
+plot(data$mpg ~ mtcars$disp, xlab = &quot;Disp&quot;, ylab = &quot;Mpg&quot;, 
+     xlim = c(75, 475), ylim = c(10, 35),
+     main = &quot;Scatterplot Mpg - Disp&quot;, col = &quot;red&quot;, pch = 20, cex = 1.5)</code></pre>
+<p><img src="LearnR_files/figure-html/unnamed-chunk-23-1.png" width="672" /></p>
+<p> </p>
+<p> </p>
+</div>
+<div id="descriptives" class="section level2">
+<h2>Descriptives</h2>
+<div id="obtain-descriptives-for-continuous-variables" class="section level5">
+<h5>Obtain descriptives for continuous variables</h5>
 <p>mean (sd)</p>
-<pre class="r"><code>mean(mtcars$mpg)</code></pre>
+<pre class="r"><code>mean(data$mpg)</code></pre>
 <pre><code>## [1] 20.09062</code></pre>
-<pre class="r"><code>sd(mtcars$mpg)</code></pre>
+<pre class="r"><code>sd(data$mpg)</code></pre>
 <pre><code>## [1] 6.026948</code></pre>
 <p>median (IQR)</p>
-<pre class="r"><code>median(mtcars$mpg)</code></pre>
+<pre class="r"><code>median(data$mpg)</code></pre>
 <pre><code>## [1] 19.2</code></pre>
-<pre class="r"><code>quantile(mtcars$mpg, probs = c(0.25, 0.75))</code></pre>
+<pre class="r"><code>quantile(data$mpg, probs = c(0.25, 0.75))</code></pre>
 <pre><code>##    25%    75% 
 ## 15.425 22.800</code></pre>
-<p>Obtain descriptives for categorical variables</p>
+<p> </p>
+</div>
+<div id="obtain-descriptives-for-categorical-variables" class="section level5">
+<h5>Obtain descriptives for categorical variables</h5>
 <p>Frequencies</p>
-<pre class="r"><code>table(mtcars$cyl)</code></pre>
+<pre class="r"><code>table(data$cyl)</code></pre>
 <pre><code>## 
 ##  4  6  8 
 ## 11  7 14</code></pre>
 <p>Crosstabs</p>
-<pre class="r"><code>table(mtcars$cyl, mtcars$vs)</code></pre>
+<pre class="r"><code>table(data$cyl, data$vs)</code></pre>
 <pre><code>##    
 ##      0  1
 ##   4  1 10
 ##   6  3  4
 ##   8 14  0</code></pre>
+<p>   </p>
+</div>
+</div>
+<div id="tests" class="section level2">
+<h2>Statistical tests</h2>
+<div id="t-test" class="section level5">
+<h5>t-test</h5>
+<p>With a t test, we compare a normally distributed continuous variable between two groups. In the data “am” is a grouping variable (0/1).</p>
+<pre class="r"><code>table(data$am)</code></pre>
+<pre><code>## 
+##  0  1 
+## 19 13</code></pre>
+<p>“drat” is a continuous variable. Is it normally distributed?</p>
+<pre class="r"><code>par(mfrow = c(1,2))
+hist(data$drat)
+qqnorm(data$drat)
+qqline(data$drat, col = &quot;steelblue&quot;)</code></pre>
+<p><img src="LearnR_files/figure-html/unnamed-chunk-29-1.png" width="672" /></p>
+<p>This looks pretty normal, so we can use a t-test to analyze these data.</p>
+<pre class="r"><code>t.test(drat ~ am, data = data)</code></pre>
+<pre><code>## 
+##  Welch Two Sample t-test
+## 
+## data:  drat by am
+## t = -5.6461, df = 27.198, p-value = 5.267e-06
+## alternative hypothesis: true difference in means between group 0 and group 1 is not equal to 0
+## 95 percent confidence interval:
+##  -1.0411183 -0.4862501
+## sample estimates:
+## mean in group 0 mean in group 1 
+##        3.286316        4.050000</code></pre>
+<p>The output provides us with the p-value of the test, but also the 95% confidence interval and the mean in both groups.</p>
+<p>It is possible to save the test as an r object (named “test”) and extract the p-value from it.</p>
+<pre class="r"><code>test &lt;- t.test(drat ~ am, data = data)
+test$p.value</code></pre>
+<pre><code>## [1] 5.266742e-06</code></pre>
+<p> </p>
+</div>
+<div id="mann-whitney-u-test" class="section level5">
+<h5>Mann-Whitney U test</h5>
+<p>When the continuous variable is not normally distributed, we use the Mann-Whitney U test (or Wilcoxon Rank Sum test). The variable “mpg” is not normally distributed</p>
+<pre class="r"><code>par(mfrow = c(1,2))
+hist(data$disp)
+qqnorm(data$disp)
+qqline(data$disp, col = &quot;steelblue&quot;)</code></pre>
+<p><img src="LearnR_files/figure-html/unnamed-chunk-32-1.png" width="672" /></p>
+</div>
 </div>
 
 
