@@ -1,7 +1,7 @@
 name: "Learn R"
 output_dir: "."
 navbar:
-    title: "Tutorial on R"
+    title: "Beginner guide to R"
     left:
     - text: "Home"
       href: index.html

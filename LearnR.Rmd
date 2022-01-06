@@ -59,6 +59,14 @@ library(lattice)
 
 *Installing* a library only needs to be done once. *Loading* the library must be done every time you start R. 
 
+In the bottom right pane, you can find the tab *Packages*. Here you can find help on files about the packages. Help about a specific function can also be found with `?`:
+
+```{r echo = T, eval=FALSE}
+?xyplot
+```
+
+
+
 &nbsp;
 &nbsp;
 
@@ -108,6 +116,7 @@ Data can also be loaded via the menu. Go to File -> Import Dataset -> choose you
 
 ## Datamanagement {#datamanagement}
 We  want to investigate and explore the data set before we perform our analyses. Often we also need to perform some data manipulation steps first.
+&nbsp;
 
 #### Explore data
 Let's explore a dataset.
@@ -382,9 +391,10 @@ Correlations are used for two continuous variables. We already made a scatterplo
 ```{r echo = T, eval=T}
 plot(data$mpg ~ data$disp)
 ```
+
 There seems to be a strong negative correlation between the variables. Is it significant?
 
-```{r echo = T, eval=T}
+```{r echo = T, eval=T, warning=F}
 cor.test(data$disp, data$mpg, method = "spearman")
 ```
 Since "mpg" is not normally distributed, we use the `method = "spearman"` version of the test. For the Pearson correlation, use `method = "pearson"`.
@@ -398,5 +408,54 @@ Coming soon!
 &nbsp;
 
 ## Saving your work {#saving}
+There are several ways to save your work. 
+&nbsp;
 
-Coming soon!
+#### Save script.
+I always save my script as `.R` file. 
+Additionally I can save separate R objects with the `save()` function. 
+
+&nbsp; 
+
+#### Save datasets and output
+If `data2` is the result of several datamanagement steps and the dataset that is used for the analyses, I might want to save data. I can save this as `.RData` file.  
+
+```{r echo = T, eval=F, warning=F}
+save(data2, file = "C:/Documents/data2.RData")
+```
+
+
+**Reminder note ** for R to recognize the folder you need to use forward slashes (`/`) instead of backward slashes (`\`)
+
+Models that take a long time to run, can also be save in this way.
+
+```{r echo = T, eval=F, warning=F}
+save(Model1, file = "C:/Documents/model1.RData")
+```
+&nbsp;
+
+#### Export data 
+If I want to use my data in excel, I can export the data to excel for example.
+
+```{r echo = T, eval=F, warning=F}
+library("xlsx")
+save(data2, file = "C:/Documents/data2.xlsx")
+```
+&nbsp;
+
+#### Save graphs
+
+Graphs can be saved in different file formats use `png(), pdf(), tiff() etc.` to create the file. Then run the code for the plot. With `dev.off()` at the end, the plot is saved as the file. 
+```{r echo = T, eval=F, warning=F}
+png("C:/Documents/plots.png")
+plot(data$mpg ~ mtcars$disp, xlab = "Disp", ylab = "Mpg")
+dev.off()
+```
+&nbsp;
+
+#### Save environment
+You can also save the whole environment you are working in:
+```{r echo = T, eval=F, warning=F}
+
+save.image(file = "C:/Documents/MyEnvironment.RData")
+```

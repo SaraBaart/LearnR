@@ -1,5 +1,5 @@
 ---
-title: "Learn R"
+title: "Beginner guide to R"
 author: "by: Sara Baart, Department of Biostatistics, Erasmus MC"
 output: html_document
 ---
@@ -10,7 +10,7 @@ opts_chunk$set(echo = TRUE)
 ```
 &nbsp;
 
-### Learn  R here!
+
 
 R is an open source statistical software package used often in data analysis. It is a little more complex to use than SPSS, because it is mainly syntax (code) based. However, R is more flexible and powerful than SPSS. So, it is definitely worth the effort to get the hang of.
 
@@ -27,6 +27,7 @@ s.baart@erasmusmc.nl
 ## Installing the software
 ### R
 R is free to install and can be downloaded here: https://www.r-project.org/. Click on **download R** and choose a CRAN mirror (Netherlands for example, but this doesn't really matter) and install R for your operating system.
+&nbsp;
 
 ### RStudio
 You also need to install Rstudio. R and Rstudio are connected with each other; R does the calculations in the background and we work with Rstudio, which is more user friendly. You can download RStudio here: https://www.rstudio.com/products/rstudio/download/ (choose the free desktop version).
@@ -36,7 +37,7 @@ When you have installed it, Rstudio should look something like this:
 ```{r Rstudio, echo = FALSE}
 include_graphics("Rstudio.jpg")
 ```
-
+&nbsp;
 
 The Rstudio screen consists of four panes:
 
@@ -44,21 +45,22 @@ The Rstudio screen consists of four panes:
 include_graphics("Rstudio2.jpg")
 ```
 &nbsp;
+
+Explanation: 
+
+1) This is your **code editor** or **script**. Here you type your code; you can save this file as an .R document.
+
+2) The **environment**. All your R objects are displayed here (datasets, models, vectors, functions, etc.)
+
+3) The **console**, where you find the results of your analyses.
+
+4) Plots are displayed here. The tabs **packages** and **help** provide information about packages and functions.
+
 &nbsp;
 
-1) This is your code editor or script. Here you type your code; you can save this file as an .R document.
+Now you are ready to start with R:
 
-2) The environment. All your R objects are displayed here (datasets, models, vectors, functions, etc.)
-
-3) The console, where you find the results of your analyses.
-
-4) Plots are displayed here. The tabs packages and help provide information about packages and functions.
-
-&nbsp;
-
-Now you are ready to start with the tutorials:
-
-### Tutorials
-[Start with the basics](LearnR.html)
+### Guides
+[Getting started](LearnR.html)
 
 [Advanced options](LearnR2.html)
