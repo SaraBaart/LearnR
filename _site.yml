@@ -9,3 +9,12 @@ navbar:
       href: LearnR.html
     - text: "Advanced options"
       href: LearnR2.html
+      
+    right:
+    - icon: fab fa-github fa-lg
+      href: https://github.com/SaraBaart 
+    - icon: fab fa-twitter fa-lg
+      href: https://twitter.com/SaraBaart
+    - icon: fab fa-linkedin fa-lg
+      href:  https://www.linkedin.com/in/sara-baart-8109a422/      
+     
