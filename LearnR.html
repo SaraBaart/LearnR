@@ -35,6 +35,8 @@
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
 <link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
 
 <style type="text/css">
   code{white-space: pre-wrap;}
@@ -328,7 +330,24 @@ div.tocify {
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
-        
+        <li>
+  <a href="https://github.com/SaraBaart">
+    <span class="fab fa-github fa-lg"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="https://twitter.com/SaraBaart">
+    <span class="fab fa-twitter fa-lg"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="https://www.linkedin.com/in/sara-baart-8109a422/">
+    <span class="fab fa-linkedin fa-lg"></span>
+     
+  </a>
+</li>
       </ul>
     </div><!--/.nav-collapse -->
   </div><!--/.container -->
@@ -692,11 +711,31 @@ summary(aov1)</code></pre>
 <p>The groups of gear are also significantly different for disp values.</p>
 <p> </p>
 </div>
+<div id="chi-squared-test" class="section level4">
+<h4>Chi-squared test</h4>
+<p>To see if two binary or categorical variables are associated, we can use the chi-squared test.</p>
+<p>The variables “vs” and “am” are both binary. With <code>table()</code> we can make a crosstab of the variables.</p>
+<pre class="r"><code>tab &lt;- with(data, table(vs, am))
+tab</code></pre>
+<pre><code>##    am
+## vs   0  1
+##   0 12  6
+##   1  7  7</code></pre>
+<p>We now estimate the chi-squared statistic on this table:</p>
+<pre class="r"><code>chisq.test(tab)</code></pre>
+<pre><code>## 
+##  Pearson&#39;s Chi-squared test with Yates&#39; continuity correction
+## 
+## data:  tab
+## X-squared = 0.34754, df = 1, p-value = 0.5555</code></pre>
+<p>The p-value is &gt; 0.05.</p>
+<p> </p>
+</div>
 <div id="correlations" class="section level4">
 <h4>Correlations</h4>
 <p>Correlations are used for two continuous variables. We already made a scatterplot of “mpg” and “disp”.</p>
 <pre class="r"><code>plot(data$mpg ~ data$disp)</code></pre>
-<p><img src="LearnR_files/figure-html/unnamed-chunk-42-1.png" width="672" /></p>
+<p><img src="LearnR_files/figure-html/unnamed-chunk-44-1.png" width="672" /></p>
 <p>There seems to be a strong negative correlation between the variables. Is it significant?</p>
 <pre class="r"><code>cor.test(data$disp, data$mpg, method = &quot;spearman&quot;)</code></pre>
 <pre><code>## 
@@ -709,12 +748,171 @@ summary(aov1)</code></pre>
 ##        rho 
 ## -0.9088824</code></pre>
 <p>Since “mpg” is not normally distributed, we use the <code>method = "spearman"</code> version of the test. For the Pearson correlation, use <code>method = "pearson"</code>. The correlation is -0.9 and highly significant.</p>
+<p> </p>
 </div>
 </div>
 <div id="regression" class="section level2">
 <h2>Regression</h2>
-<p>Coming soon!</p>
+<p> </p>
+<div id="linear-regression" class="section level4">
+<h4>Linear regression</h4>
+<p>In regression we like to explain how one variable (x) influences changes in a second variable (y). Let’s start with a scatterplot for “drat” and “disp”:</p>
+<pre class="r"><code>plot(drat ~ disp, data = data)</code></pre>
+<p><img src="LearnR_files/figure-html/unnamed-chunk-46-1.png" width="672" />  </p>
+<p>With the regression model we can estimate how unit-value in x (disp) impact a change in y (drat): The model is estimated with <code>lm()</code>. <code>summary()</code> prints a summary of the model.</p>
+<pre class="r"><code>m1 &lt;- lm(drat ~ disp, data = data)
+summary(m1)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = drat ~ disp, data = data)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -0.85409 -0.23642  0.01812  0.13112  0.99196 
+## 
+## Coefficients:
+##               Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)  4.3034722  0.1447123  29.738  &lt; 2e-16 ***
+## disp        -0.0030639  0.0005545  -5.526 5.28e-06 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 0.3826 on 30 degrees of freedom
+## Multiple R-squared:  0.5044, Adjusted R-squared:  0.4879 
+## F-statistic: 30.53 on 1 and 30 DF,  p-value: 5.282e-06</code></pre>
+<p> </p>
+<p>The p-value for disp is highly significant (5.2820217^{-6}). I can extract the coefficient table from this object:  </p>
+<pre class="r"><code>summary(m1)$coefficients</code></pre>
+<pre><code>##                 Estimate   Std. Error   t value     Pr(&gt;|t|)
+## (Intercept)  4.303472222 0.1447123152 29.738120 8.065594e-24
+## disp        -0.003063904 0.0005544844 -5.525681 5.282022e-06</code></pre>
+<p> </p>
+<p>To trust the results of the model, we need to validate the assumptions. Normality and homoskedasticity of the residuals can be checked by making plots.</p>
+<pre class="r"><code>par(mfrow = c(2,2))
+plot(m1)</code></pre>
+<p><img src="LearnR_files/figure-html/unnamed-chunk-49-1.png" width="672" /></p>
+<p>We look mainly at the two upper plots. With the first we can check whether the residuals from a noisy cloud of points. The qq-plot in the second graph can show whether the residuals follow a normal distribution. No serious deviations here.  </p>
+<p>Multiple independent (x) variables can be added to the model.</p>
+<pre class="r"><code>m2 &lt;- lm(drat ~ disp + mpg + vs, data = data)
+summary(m2)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = drat ~ disp + mpg + vs, data = data)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -0.69295 -0.22024 -0.00385  0.18727  0.95692 
+## 
+## Coefficients:
+##              Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)  3.665518   0.659203   5.561 6.01e-06 ***
+## disp        -0.002419   0.001122  -2.156   0.0398 *  
+## mpg          0.028263   0.021714   1.302   0.2037    
+## vs          -0.179902   0.195797  -0.919   0.3660    
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 0.3813 on 28 degrees of freedom
+## Multiple R-squared:  0.5405, Adjusted R-squared:  0.4913 
+## F-statistic: 10.98 on 3 and 28 DF,  p-value: 6.117e-05</code></pre>
+<p> </p>
+<p>Interactions can be added by using the <code>*</code> instead of the <code>+</code></p>
+<pre class="r"><code>m3 &lt;- lm(drat ~ disp * vs + mpg, data = data)
+summary(m3)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = drat ~ disp * vs + mpg, data = data)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -0.59639 -0.20250 -0.05495  0.15378  0.94027 
+## 
+## Coefficients:
+##              Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)  3.984823   0.653679   6.096 1.64e-06 ***
+## disp        -0.002403   0.001074  -2.236   0.0338 *  
+## vs           0.524636   0.418971   1.252   0.2212    
+## mpg          0.008746   0.023239   0.376   0.7096    
+## disp:vs     -0.004128   0.002195  -1.880   0.0709 .  
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 0.3652 on 27 degrees of freedom
+## Multiple R-squared:  0.5937, Adjusted R-squared:  0.5336 
+## F-statistic: 9.865 on 4 and 27 DF,  p-value: 4.718e-05</code></pre>
+<p>Do not forget to evaluate the assumptions!</p>
+<p> </p>
+</div>
+<div id="logistic-regression" class="section level4">
+<h4>Logistic regression</h4>
+<p>If the dependent variable is binary, we use a logistic regression model with <code>glm()</code></p>
+<pre class="r"><code>glm1 &lt;- glm(vs ~ drat, data = data, family = binomial(logit))
+summary(glm1)</code></pre>
+<pre><code>## 
+## Call:
+## glm(formula = vs ~ drat, family = binomial(logit), data = data)
+## 
+## Deviance Residuals: 
+##     Min       1Q   Median       3Q      Max  
+## -1.7808  -0.7719  -0.6192   1.0357   2.0465  
+## 
+## Coefficients:
+##             Estimate Std. Error z value Pr(&gt;|z|)  
+## (Intercept)  -7.4480     3.1805  -2.342   0.0192 *
+## drat          1.9875     0.8663   2.294   0.0218 *
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## (Dispersion parameter for binomial family taken to be 1)
+## 
+##     Null deviance: 43.860  on 31  degrees of freedom
+## Residual deviance: 37.159  on 30  degrees of freedom
+## AIC: 41.159
+## 
+## Number of Fisher Scoring iterations: 3</code></pre>
+<p> </p>
+<p>The value of the coefficient is interpreted by taking the exponent</p>
+<pre class="r"><code>b1 &lt;- summary(glm1)$coef[2, 1]
+ exp(b1)</code></pre>
+<pre><code>## [1] 7.297034</code></pre>
+<p> </p>
+<p>Multiple variables can be added to the model</p>
+<pre class="r"><code>glm2 &lt;- glm(vs ~ drat + am + mpg, data = data, family = binomial(logit))
+summary(glm2)</code></pre>
+<pre><code>## 
+## Call:
+## glm(formula = vs ~ drat + am + mpg, family = binomial(logit), 
+##     data = data)
+## 
+## Deviance Residuals: 
+##      Min        1Q    Median        3Q       Max  
+## -2.22751  -0.40730  -0.08654   0.28217   1.67256  
+## 
+## Coefficients:
+##             Estimate Std. Error z value Pr(&gt;|z|)  
+## (Intercept) -16.1227     6.4962  -2.482   0.0131 *
+## drat          1.3874     1.7037   0.814   0.4154  
+## am           -3.6872     1.8619  -1.980   0.0477 *
+## mpg           0.6176     0.2541   2.431   0.0151 *
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## (Dispersion parameter for binomial family taken to be 1)
+## 
+##     Null deviance: 43.860  on 31  degrees of freedom
+## Residual deviance: 19.956  on 28  degrees of freedom
+## AIC: 27.956
+## 
+## Number of Fisher Scoring iterations: 6</code></pre>
+<p> </p>
+<p>The predicted probability of ‘vs’ for specific values of the x variables can be calculated with <code>predict()</code></p>
+<pre class="r"><code>DF &lt;- data.frame(drat = 3.6, am = 1, mpg = 20.1)
+predict(glm2, newdata = DF, type = &quot;response&quot;)</code></pre>
+<pre><code>##          1 
+## 0.08303771</code></pre>
+<p>The option <code>type = "response"</code> ensure the result is given als probability.</p>
 <p>   </p>
+</div>
 </div>
 <div id="saving" class="section level2">
 <h2>Saving your work</h2>

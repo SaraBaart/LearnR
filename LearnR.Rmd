@@ -385,6 +385,27 @@ The groups of gear are also significantly different for disp values.
 
 &nbsp;
 
+
+#### Chi-squared test
+To see if two binary or categorical variables are associated, we can use the chi-squared test. 
+
+The variables "vs" and "am" are both binary. With `table()` we can make a crosstab of the variables.
+
+```{r echo = T, eval=T}
+tab <- with(data, table(vs, am))
+tab
+
+```
+
+We now estimate the chi-squared statistic on this table:
+
+```{r echo = T, eval=T}
+chisq.test(tab)
+```
+The p-value is > 0.05. 
+
+&nbsp;
+
 #### Correlations
 Correlations are used for two continuous variables. We already made a scatterplot of "mpg" and "disp".
 
@@ -400,9 +421,111 @@ cor.test(data$disp, data$mpg, method = "spearman")
 Since "mpg" is not normally distributed, we use the `method = "spearman"` version of the test. For the Pearson correlation, use `method = "pearson"`.
 The correlation is -0.9 and highly significant. 
 
-## Regression {#regression}
+&nbsp;
 
-Coming soon!
+## Regression {#regression}
+&nbsp;
+
+####  Linear regression
+
+In regression we like to explain how one variable (x) influences changes in a second variable (y). Let's start with a scatterplot for "drat" and "disp":
+
+```{r echo = T, eval=T, warning=F}
+plot(drat ~ disp, data = data)
+```
+&nbsp;
+
+With the regression model we can estimate how unit-value in x (disp) impact a change in y (drat):
+The model is estimated with `lm()`. `summary()` prints a summary of the model.
+
+```{r echo = T, eval=T, warning=F}
+m1 <- lm(drat ~ disp, data = data)
+summary(m1)
+
+```
+&nbsp;
+
+The p-value for disp is highly significant (`r summary(m1)$coefficients[2,4]`). I can extract the coefficient table from this object:
+&nbsp;
+
+```{r echo = T, eval=T, warning=F}
+summary(m1)$coefficients
+```
+&nbsp;
+
+To trust the results of the model, we need to validate the assumptions. Normality and homoskedasticity of the residuals can be checked by making plots.
+
+```{r echo = T, eval=T, warning=F}
+par(mfrow = c(2,2))
+plot(m1)
+```
+
+We look mainly at the two upper plots. With the first we can check whether the residuals from a noisy cloud of points. The qq-plot in the second graph can show whether the residuals follow a normal distribution. No serious deviations here. 
+&nbsp;
+
+
+Multiple independent (x) variables can be added to the model.
+
+```{r echo = T, eval=T, warning=F}
+m2 <- lm(drat ~ disp + mpg + vs, data = data)
+summary(m2)
+
+```
+&nbsp;
+
+Interactions can be added by using the `*` instead of the `+`
+
+```{r echo = T, eval=T, warning=F}
+m3 <- lm(drat ~ disp * vs + mpg, data = data)
+summary(m3)
+
+```
+
+Do not forget to evaluate the assumptions!
+
+&nbsp;
+
+#### Logistic regression
+If the dependent variable is binary, we use a logistic regression model with `glm()`
+
+```{r echo = T, eval=T, warning=F}
+glm1 <- glm(vs ~ drat, data = data, family = binomial(logit))
+summary(glm1)
+
+```
+
+&nbsp;
+
+The value of the coefficient is interpreted by taking the exponent
+
+```{r echo = T, eval=T, warning=F}
+b1 <- summary(glm1)$coef[2, 1]
+ exp(b1)
+
+```
+
+&nbsp;
+
+Multiple variables can be added to the model
+
+```{r echo = T, eval=T, warning=F}
+glm2 <- glm(vs ~ drat + am + mpg, data = data, family = binomial(logit))
+summary(glm2)
+
+```
+
+&nbsp;
+
+
+The predicted probability of 'vs' for specific values of the x variables can be calculated with `predict()`
+
+```{r echo = T, eval=T, warning=F}
+DF <- data.frame(drat = 3.6, am = 1, mpg = 20.1)
+predict(glm2, newdata = DF, type = "response")
+
+```
+The option `type = "response"` ensure the result is given als probability.
+
 
 &nbsp;
 &nbsp;
