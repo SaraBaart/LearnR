@@ -24,7 +24,7 @@ The topics in this document are:
 
 * [Importing data sets](#importing)
 
-* [Datamanagement](#datamanagement)
+* [Data management](#datamanagement)
 
 * [Graphs](#graphs)
 
@@ -114,7 +114,7 @@ Data can also be loaded via the menu. Go to File -> Import Dataset -> choose you
 &nbsp;
 &nbsp;
 
-## Datamanagement {#datamanagement}
+## Data management {#datamanagement}
 We  want to investigate and explore the data set before we perform our analyses. Often we also need to perform some data manipulation steps first.
 &nbsp;
 
@@ -203,8 +203,13 @@ data2 <- subset(data, select = -c(mpg, cyl))
 ```{r echo = T, eval=T}
 data2 <- subset(data, select = c(mpg, cyl))
 ```
+
+&nbsp;
+
+More options for data management can by found in the [Advanced options](LearnR2.html#datamanagement2).
 &nbsp;
 &nbsp;
+
 
 ## Graphs {#graphs}
 
@@ -243,8 +248,12 @@ plot(data$mpg ~ mtcars$disp, xlab = "Disp", ylab = "Mpg",
      main = "Scatterplot Mpg - Disp", col = "red", pch = 20, cex = 1.5)
 ```
 
-&nbsp;
 
+
+&nbsp;
+To learn how to use ggplot2 for graphics, you can go to [Advanced graphs](LearnR2.html#graphs2).
+
+&nbsp;
 &nbsp;
 
 ## Descriptives {#descriptives}

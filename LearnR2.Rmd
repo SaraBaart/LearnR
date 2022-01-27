@@ -11,12 +11,106 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 
-Coming soon!
+## Overview 
 
-<!-- ## Data manipulation 2 -->
+The topics in this document are:
 
-<!-- %5Certain rownumbers or columnnumbers can be accessed using the square brackets `[,]`. -->
-<!-- A number before the comma gives this rownumber. This code gives me the first  -->
-<!-- ```{r echo = T, eval=T} -->
-<!-- mtcars[1,] -->
-<!-- ``` -->
+* [Data management 2](#datamanagement2)
+
+* [Advanced graphs](#graphs2)
+
+## Data management 2 {#datamanagement2}
+We can do a lot of calculations and data manipulations with R. 
+First of all, we can use R as a calculator:
+
+```{r echo = T, eval=T} 
+2 + 4
+``` 
+ 
+We can save the result as an *object* in R. Then it is displayed in the upper right pane.
+With `<-` we assign an object
+
+```{r echo = T, eval=T} 
+x <- 2 + 4
+x
+``` 
+&nbsp;
+
+
+##### Vectors
+Vectors are a series of different values. With `c()` we can combine elements into a vector. Let's say I want to make a vector "v" with 4 values; 1,2,3,4. 
+
+```{r echo = T, eval=T} 
+v <- c(1,2,3,4)
+v
+class(v)
+```
+Since the elements of "v" are numbers, the class is numeric. I can also make a vector of text elements. In that case, the class of the vector will be "character".
+
+```{r echo = T, eval=T} 
+v2 <- c("Monday", "Tuesday", "Wednesday", "Friday")
+v2
+class(v2)
+```
+
+The function `c()` can also be used to combine two vectors.
+
+```{r echo = T, eval=T} 
+v3 <- c(v,v2)
+v3
+class(v3)
+```
+
+Notice how all the elements of v3 are now strings. 
+
+&nbsp;
+&nbsp;
+
+##### Matrices and data frames
+A matrix is a two dimensional vector. We can make a matrix with the function `matrix()`. 
+
+```{r echo = T, eval=T} 
+m1 <- matrix(c(1:9), nrow = 3)
+m1
+class(m1)
+```
+The matrix `m1` is filled with the number 1 through 9 (with `c(1:9)` I make a sequence of numbers). The matrix is filled in vertically. By specifying `nrow = 3` R knows how many rows I want. Now compare this with the following matrix:
+
+```{r echo = T, eval=T} 
+m2 <- matrix(c(1:9), nrow = 3, byrow = TRUE)
+m2
+```
+
+Can you guess what `byrow = TRUE` does?
+
+&nbsp;
+
+For our data sets, we often use the class `data.frame`. I can make my matrix into a data frame:
+
+```{r echo = T, eval=T} 
+data2 <- as.data.frame(m2)
+data2
+class(data2)
+```
+
+You can also build your data set by combining vectors using the `cbind()` function:
+
+```{r echo = T, eval=T} 
+data3 <- as.data.frame(cbind(v, v2))
+data3
+```
+
+**Note** Notice the difference between `data3` and the vector `v3` we created earlier. 
+
+
+
+Certain row numbers or colum numbers can be accessed using the square brackets `[,]`. 
+A number before the comma gives this row number. This code gives me the first  
+```{r echo = T, eval=T} 
+ mtcars[1,] 
+``` 
+ 
+ 
+## Advanced graphs {#graphs2}
+ 
+ Coming soon!

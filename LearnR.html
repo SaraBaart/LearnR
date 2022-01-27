@@ -370,7 +370,7 @@ div.tocify {
 <ul>
 <li><p><a href="#packages">Packages</a></p></li>
 <li><p><a href="#importing">Importing data sets</a></p></li>
-<li><p><a href="#datamanagement">Datamanagement</a></p></li>
+<li><p><a href="#datamanagement">Data management</a></p></li>
 <li><p><a href="#graphs">Graphs</a></p></li>
 <li><p><a href="#descriptives">Descriptives</a></p></li>
 <li><p><a href="#tests">Statistical tests</a></p></li>
@@ -429,7 +429,7 @@ library(lattice)</code></pre>
 </div>
 </div>
 <div id="datamanagement" class="section level2">
-<h2>Datamanagement</h2>
+<h2>Data management</h2>
 <p>We want to investigate and explore the data set before we perform our analyses. Often we also need to perform some data manipulation steps first.  </p>
 <div id="explore-data" class="section level4">
 <h4>Explore data</h4>
@@ -542,7 +542,8 @@ data &lt;- mtcars</code></pre>
 <div id="keep-variables" class="section level5">
 <h5>Keep variables</h5>
 <pre class="r"><code>data2 &lt;- subset(data, select = c(mpg, cyl))</code></pre>
-<p>   </p>
+<p> </p>
+<p>More options for data management can by found in the <a href="LearnR2.html#datamanagement2">Advanced options</a>.    </p>
 </div>
 </div>
 </div>
@@ -569,8 +570,8 @@ plot(data$mpg ~ mtcars$disp, xlab = &quot;Disp&quot;, ylab = &quot;Mpg&quot;,
      xlim = c(75, 475), ylim = c(10, 35),
      main = &quot;Scatterplot Mpg - Disp&quot;, col = &quot;red&quot;, pch = 20, cex = 1.5)</code></pre>
 <p><img src="LearnR_files/figure-html/unnamed-chunk-24-1.png" width="672" /></p>
-<p> </p>
-<p> </p>
+<p>  To learn how to use ggplot2 for graphics, you can go to <a href="LearnR2.html#graphs2">Advanced graphs</a>.</p>
+<p>   </p>
 </div>
 <div id="descriptives" class="section level2">
 <h2>Descriptives</h2>

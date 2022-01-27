@@ -35,6 +35,8 @@
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
 <link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
 
 <style type="text/css">
   code{white-space: pre-wrap;}
@@ -313,7 +315,7 @@ div.tocify {
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="index.html">Tutorial on R</a>
+      <a class="navbar-brand" href="index.html">Beginner guide to R</a>
     </div>
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
@@ -328,7 +330,24 @@ div.tocify {
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
-        
+        <li>
+  <a href="https://github.com/SaraBaart">
+    <span class="fab fa-github fa-lg"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="https://twitter.com/SaraBaart">
+    <span class="fab fa-twitter fa-lg"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="https://www.linkedin.com/in/sara-baart-8109a422/">
+    <span class="fab fa-linkedin fa-lg"></span>
+     
+  </a>
+</li>
       </ul>
     </div><!--/.nav-collapse -->
   </div><!--/.container -->
@@ -343,7 +362,96 @@ div.tocify {
 </div>
 
 
+<div id="overview" class="section level2">
+<h2>Overview</h2>
+<p>The topics in this document are:</p>
+<ul>
+<li><p><a href="#datamanagement2">Data management 2</a></p></li>
+<li><p><a href="#graphs2">Advanced graphs</a></p></li>
+</ul>
+</div>
+<div id="datamanagement2" class="section level2">
+<h2>Data management 2</h2>
+<p>We can do a lot of calculations and data manipulations with R. First of all, we can use R as a calculator:</p>
+<pre class="r"><code>2 + 4</code></pre>
+<pre><code>## [1] 6</code></pre>
+<p>We can save the result as an <em>object</em> in R. Then it is displayed in the upper right pane. With <code>&lt;-</code> we assign an object</p>
+<pre class="r"><code>x &lt;- 2 + 4
+x</code></pre>
+<pre><code>## [1] 6</code></pre>
+<p> </p>
+<div id="vectors" class="section level5">
+<h5>Vectors</h5>
+<p>Vectors are a series of different values. With <code>c()</code> we can combine elements into a vector. Let’s say I want to make a vector “v” with 4 values; 1,2,3,4.</p>
+<pre class="r"><code>v &lt;- c(1,2,3,4)
+v</code></pre>
+<pre><code>## [1] 1 2 3 4</code></pre>
+<pre class="r"><code>class(v)</code></pre>
+<pre><code>## [1] &quot;numeric&quot;</code></pre>
+<p>Since the elements of “v” are numbers, the class is numeric. I can also make a vector of text elements. In that case, the class of the vector will be “character”.</p>
+<pre class="r"><code>v2 &lt;- c(&quot;Monday&quot;, &quot;Tuesday&quot;, &quot;Wednesday&quot;, &quot;Friday&quot;)
+v2</code></pre>
+<pre><code>## [1] &quot;Monday&quot;    &quot;Tuesday&quot;   &quot;Wednesday&quot; &quot;Friday&quot;</code></pre>
+<pre class="r"><code>class(v2)</code></pre>
+<pre><code>## [1] &quot;character&quot;</code></pre>
+<p>The function <code>c()</code> can also be used to combine two vectors.</p>
+<pre class="r"><code>v3 &lt;- c(v,v2)
+v3</code></pre>
+<pre><code>## [1] &quot;1&quot;         &quot;2&quot;         &quot;3&quot;         &quot;4&quot;         &quot;Monday&quot;    &quot;Tuesday&quot;  
+## [7] &quot;Wednesday&quot; &quot;Friday&quot;</code></pre>
+<pre class="r"><code>class(v3)</code></pre>
+<pre><code>## [1] &quot;character&quot;</code></pre>
+<p>Notice how all the elements of v3 are now strings.</p>
+<p>   </p>
+</div>
+<div id="matrices-and-data-frames" class="section level5">
+<h5>Matrices and data frames</h5>
+<p>A matrix is a two dimensional vector. We can make a matrix with the function <code>matrix()</code>.</p>
+<pre class="r"><code>m1 &lt;- matrix(c(1:9), nrow = 3)
+m1</code></pre>
+<pre><code>##      [,1] [,2] [,3]
+## [1,]    1    4    7
+## [2,]    2    5    8
+## [3,]    3    6    9</code></pre>
+<pre class="r"><code>class(m1)</code></pre>
+<pre><code>## [1] &quot;matrix&quot; &quot;array&quot;</code></pre>
+<p>The matrix <code>m1</code> is filled with the number 1 through 9 (with <code>c(1:9)</code> I make a sequence of numbers). The matrix is filled in vertically. By specifying <code>nrow = 3</code> R knows how many rows I want. Now compare this with the following matrix:</p>
+<pre class="r"><code>m2 &lt;- matrix(c(1:9), nrow = 3, byrow = TRUE)
+m2</code></pre>
+<pre><code>##      [,1] [,2] [,3]
+## [1,]    1    2    3
+## [2,]    4    5    6
+## [3,]    7    8    9</code></pre>
+<p>Can you guess what <code>byrow = TRUE</code> does?</p>
+<p> </p>
+<p>For our data sets, we often use the class <code>data.frame</code>. I can make my matrix into a data frame:</p>
+<pre class="r"><code>data2 &lt;- as.data.frame(m2)
+data2</code></pre>
+<pre><code>##   V1 V2 V3
+## 1  1  2  3
+## 2  4  5  6
+## 3  7  8  9</code></pre>
+<pre class="r"><code>class(data2)</code></pre>
+<pre><code>## [1] &quot;data.frame&quot;</code></pre>
+<p>You can also build your data set by combining vectors using the <code>cbind()</code> function:</p>
+<pre class="r"><code>data3 &lt;- as.data.frame(cbind(v, v2))
+data3</code></pre>
+<pre><code>##   v        v2
+## 1 1    Monday
+## 2 2   Tuesday
+## 3 3 Wednesday
+## 4 4    Friday</code></pre>
+<p><strong>Note</strong> Notice the difference between <code>data3</code> and the vector <code>v3</code> we created earlier.</p>
+<p>Certain row numbers or colum numbers can be accessed using the square brackets <code>[,]</code>. A number before the comma gives this row number. This code gives me the first</p>
+<pre class="r"><code> mtcars[1,] </code></pre>
+<pre><code>##           mpg cyl disp  hp drat   wt  qsec vs am gear carb
+## Mazda RX4  21   6  160 110  3.9 2.62 16.46  0  1    4    4</code></pre>
+</div>
+</div>
+<div id="graphs2" class="section level2">
+<h2>Advanced graphs</h2>
 <p>Coming soon!</p>
+</div>
 
 
 
