@@ -19,6 +19,10 @@ The topics in this document are:
 
 * [Advanced graphs](#graphs2)
 
+* [Survival analysis](#survival)
+
+* [Mixed effects models](#mixedmodels)
+
 ## Data management 2 {#datamanagement2}
 We can do a lot of calculations and data manipulations with R. 
 First of all, we can use R as a calculator:
@@ -103,14 +107,124 @@ data3
 **Note** Notice the difference between `data3` and the vector `v3` we created earlier. 
 
 
+&nbsp;
+
 
 Certain row numbers or colum numbers can be accessed using the square brackets `[,]`. 
-A number before the comma gives this row number. This code gives me the first  
+A number before the comma gives this row number. This code gives me the first row:
 ```{r echo = T, eval=T} 
  mtcars[1,] 
 ``` 
  
- 
+
+&nbsp;
+
+A number after the comma shows this column number (or variable number). Here we show the second column:
+```{r echo = T, eval=T} 
+ mtcars[,2] 
+```  
+
+
+
+
 ## Advanced graphs {#graphs2}
  
  Coming soon!
+ 
+ 
+## Survival analysis {#survival}
+
+A comprehensive guide to survival analysis in R can be found here: 
+[Survival Analysis in R Companion - By Dimitris Rizopoulos](https://www.drizopoulos.com/courses/emc/survival%20analysis%20in%20r%20companion)
+
+
+ 
+## Mixed effects models {#mixedmodels}
+
+#### Mixed models in general
+
+One of the assumptions of (linear) regression models is that the observations are independent of each other. This assumptions does not hold in situations of *clustered* or *hierarchical* data.
+
+In multicenter studies, patients are clustered within centers of the study. In longitudinal studies with repeated measurements per patient, observations from one patient are clustered in that patient. This can influence the analyses of a study, because observations *within* a cluster might be more correlated than observation *between* different clusters.
+
+One framework possible for clustered is the mixed effects model. This is regression model that combines **fixed** (or population) effects with **random** (or subject-specific) effects. 
+
+The graph below visualizes a mixed effects model for repeated measures on two patients (Subject 1 and Subject 2). The thick black line is the population effect estimated by the fixed effects. Through the random effects, every patient has a specific intercept and slope indicated by the dashed lines.  
+
+
+```{r echo = F, eval=T} 
+p1 <- as.data.frame(cbind(c(0, 1, 2, 3, 4, 5),
+                          c(6, 5.3, 4.4, 3.2, 3.5, 3),
+                          c(8.4, 9.1, 9.7, 11.3, 13.5, 15)))
+plot(p1$V1, p1$V2, ylim =c(1, 16), pch =19, ylab = ("Longtidunal Outcome"), xlab = "Time")
+points(p1$V1, p1$V3)
+segments(0, 6,5,2, lty = 2)
+segments(0, 8,5,14.5, lty = 2)
+segments(0, 7,5,9, lty = 1, lwd = 2)
+legend("topleft", legend = c("Subject 1", "Subject 2"), pch = c(19, 1), bty = "n", cex = 0.8 )
+
+```  
+
+
+&nbsp;
+
+&nbsp;
+
+#### Mixed models in R
+
+Two libraries are used most often for mixed effects models in R; `nlme` and `lme4`. Here I will use `lme4`for the analyses, however a data set available in `nlme` is used as an example.
+
+```{r echo = T, eval=F, message = F}
+install.packages(lme4)
+install.packages(nlme)
+```
+
+```{r echo = T, eval=T, message = F}
+library(lme4)
+library(nlme)
+```
+
+The `lme4` package does not provide p-values for the models. Some explanation on why by the author of the package, can be found [here](https://stat.ethz.ch/pipermail/r-help/2006-May/094765.html). The package `lmerTest` will provide you with p-values, however caution is needed in interpreting them!
+
+The dataset for the example is `Orthodont`
+
+```{r echo = T, eval=T, message = F}
+data(Orthodont)
+head(Orthodont)
+dim(Orthodont)
+
+```
+
+The dataset consists of 108 observations, from 27 different subjects. The below code, calculates the number of unique values for each variable.
+
+```{r echo = T, eval=T, message = F}
+sapply(Orthodont, function(x) length(unique(x)))
+```
+
+We can also see that there are 4 ages at which the distances are measured and two sexes. 
+
+A good way to visualize longitudinal data is with a spaghettiplot. Measurements from the same subject are connected with a line.
+
+```{r echo = T, eval=T, message = F}
+library(ggplot2)
+p <- ggplot(data = Orthodont) +
+  geom_point(aes(x = age, y = distance, group = Subject, colour = Sex)) +
+  geom_line(aes(x = age, y = distance, group = Subject, colour = Sex)) +
+  theme_classic() 
+p
+```
+
+
+Based on the plot, overall the subjects seem to increase as age increases and Males seem to have a higher distance than Females. 
+
+We fit two mixed effects models, for which the code is similar to a linear regression model. In the fixed effect, we include age, sex and an interaction. In model `fm1` we estimate random intercepts with the code `(1 | Subject)`, allowing every subject their own intercept. In model `fm2` we additionally include random slopes with `(age | Subject)`. 
+
+```{r echo = T, eval=T, message = F}
+
+fm1 <- lmer(distance ~ age*Sex + (1 | Subject), data = Orthodont) 
+summary(fm1)
+
+
+fm2 <- lmer(distance ~ age*Sex + (age | Subject), data = Orthodont) 
+summary(fm2)
+```

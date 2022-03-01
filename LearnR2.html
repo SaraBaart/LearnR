@@ -368,6 +368,8 @@ div.tocify {
 <ul>
 <li><p><a href="#datamanagement2">Data management 2</a></p></li>
 <li><p><a href="#graphs2">Advanced graphs</a></p></li>
+<li><p><a href="#survival">Survival analysis</a></p></li>
+<li><p><a href="#mixedmodels">Mixed effects models</a></p></li>
 </ul>
 </div>
 <div id="datamanagement2" class="section level2">
@@ -442,15 +444,135 @@ data3</code></pre>
 ## 3 3 Wednesday
 ## 4 4    Friday</code></pre>
 <p><strong>Note</strong> Notice the difference between <code>data3</code> and the vector <code>v3</code> we created earlier.</p>
-<p>Certain row numbers or colum numbers can be accessed using the square brackets <code>[,]</code>. A number before the comma gives this row number. This code gives me the first</p>
+<p> </p>
+<p>Certain row numbers or colum numbers can be accessed using the square brackets <code>[,]</code>. A number before the comma gives this row number. This code gives me the first row:</p>
 <pre class="r"><code> mtcars[1,] </code></pre>
 <pre><code>##           mpg cyl disp  hp drat   wt  qsec vs am gear carb
 ## Mazda RX4  21   6  160 110  3.9 2.62 16.46  0  1    4    4</code></pre>
+<p> </p>
+<p>A number after the comma shows this column number (or variable number). Here we show the second column:</p>
+<pre class="r"><code> mtcars[,2] </code></pre>
+<pre><code>##  [1] 6 6 4 6 8 6 8 4 4 6 6 8 8 8 8 8 8 4 4 4 4 8 8 8 8 4 4 4 8 6 8 4</code></pre>
 </div>
 </div>
 <div id="graphs2" class="section level2">
 <h2>Advanced graphs</h2>
 <p>Coming soon!</p>
+</div>
+<div id="survival" class="section level2">
+<h2>Survival analysis</h2>
+<p>A comprehensive guide to survival analysis in R can be found here: <a href="https://www.drizopoulos.com/courses/emc/survival%20analysis%20in%20r%20companion">Survival Analysis in R Companion - By Dimitris Rizopoulos</a></p>
+</div>
+<div id="mixedmodels" class="section level2">
+<h2>Mixed effects models</h2>
+<div id="mixed-models-in-general" class="section level4">
+<h4>Mixed models in general</h4>
+<p>One of the assumptions of (linear) regression models is that the observations are independent of each other. This assumptions does not hold in situations of <em>clustered</em> or <em>hierarchical</em> data.</p>
+<p>In multicenter studies, patients are clustered within centers of the study. In longitudinal studies with repeated measurements per patient, observations from one patient are clustered in that patient. This can influence the analyses of a study, because observations <em>within</em> a cluster might be more correlated than observation <em>between</em> different clusters.</p>
+<p>One framework possible for clustered is the mixed effects model. This is regression model that combines <strong>fixed</strong> (or population) effects with <strong>random</strong> (or subject-specific) effects.</p>
+<p>The graph below visualizes a mixed effects model for repeated measures on two patients (Subject 1 and Subject 2). The thick black line is the population effect estimated by the fixed effects. Through the random effects, every patient has a specific intercept and slope indicated by the dashed lines.</p>
+<p><img src="LearnR2_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
+<p> </p>
+<p> </p>
+</div>
+<div id="mixed-models-in-r" class="section level4">
+<h4>Mixed models in R</h4>
+<p>Two libraries are used most often for mixed effects models in R; <code>nlme</code> and <code>lme4</code>. Here I will use <code>lme4</code>for the analyses, however a data set available in <code>nlme</code> is used as an example.</p>
+<pre class="r"><code>install.packages(lme4)
+install.packages(nlme)</code></pre>
+<pre class="r"><code>library(lme4)
+library(nlme)</code></pre>
+<p>The <code>lme4</code> package does not provide p-values for the models. Some explanation on why by the author of the package, can be found <a href="https://stat.ethz.ch/pipermail/r-help/2006-May/094765.html">here</a>. The package <code>lmerTest</code> will provide you with p-values, however caution is needed in interpreting them!</p>
+<p>The dataset for the example is <code>Orthodont</code></p>
+<pre class="r"><code>data(Orthodont)
+head(Orthodont)</code></pre>
+<pre><code>## Grouped Data: distance ~ age | Subject
+##   distance age Subject  Sex
+## 1     26.0   8     M01 Male
+## 2     25.0  10     M01 Male
+## 3     29.0  12     M01 Male
+## 4     31.0  14     M01 Male
+## 5     21.5   8     M02 Male
+## 6     22.5  10     M02 Male</code></pre>
+<pre class="r"><code>dim(Orthodont)</code></pre>
+<pre><code>## [1] 108   4</code></pre>
+<p>The dataset consists of 108 observations, from 27 different subjects. The below code, calculates the number of unique values for each variable.</p>
+<pre class="r"><code>sapply(Orthodont, function(x) length(unique(x)))</code></pre>
+<pre><code>## distance      age  Subject      Sex 
+##       27        4       27        2</code></pre>
+<p>We can also see that there are 4 ages at which the distances are measured and two sexes.</p>
+<p>A good way to visualize longitudinal data is with a spaghettiplot. Measurements from the same subject are connected with a line.</p>
+<pre class="r"><code>library(ggplot2)
+p &lt;- ggplot(data = Orthodont) +
+  geom_point(aes(x = age, y = distance, group = Subject, colour = Sex)) +
+  geom_line(aes(x = age, y = distance, group = Subject, colour = Sex)) +
+  theme_classic() 
+p</code></pre>
+<p><img src="LearnR2_files/figure-html/unnamed-chunk-17-1.png" width="672" /></p>
+<p>Based on the plot, overall the subjects seem to increase as age increases and Males seem to have a higher distance than Females.</p>
+<p>We fit two mixed effects models, for which the code is similar to a linear regression model. In the fixed effect, we include age, sex and an interaction. In model <code>fm1</code> we estimate random intercepts with the code <code>(1 | Subject)</code>, allowing every subject their own intercept. In model <code>fm2</code> we additionally include random slopes with <code>(age | Subject)</code>.</p>
+<pre class="r"><code>fm1 &lt;- lmer(distance ~ age*Sex + (1 | Subject), data = Orthodont) 
+summary(fm1)</code></pre>
+<pre><code>## Linear mixed model fit by REML [&#39;lmerMod&#39;]
+## Formula: distance ~ age * Sex + (1 | Subject)
+##    Data: Orthodont
+## 
+## REML criterion at convergence: 433.8
+## 
+## Scaled residuals: 
+##     Min      1Q  Median      3Q     Max 
+## -3.5980 -0.4546  0.0158  0.5024  3.6862 
+## 
+## Random effects:
+##  Groups   Name        Variance Std.Dev.
+##  Subject  (Intercept) 3.299    1.816   
+##  Residual             1.922    1.386   
+## Number of obs: 108, groups:  Subject, 27
+## 
+## Fixed effects:
+##               Estimate Std. Error t value
+## (Intercept)    16.3406     0.9813  16.652
+## age             0.7844     0.0775  10.121
+## SexFemale       1.0321     1.5374   0.671
+## age:SexFemale  -0.3048     0.1214  -2.511
+## 
+## Correlation of Fixed Effects:
+##             (Intr) age    SexFml
+## age         -0.869              
+## SexFemale   -0.638  0.555       
+## age:SexFeml  0.555 -0.638 -0.869</code></pre>
+<pre class="r"><code>fm2 &lt;- lmer(distance ~ age*Sex + (age | Subject), data = Orthodont) 
+summary(fm2)</code></pre>
+<pre><code>## Linear mixed model fit by REML [&#39;lmerMod&#39;]
+## Formula: distance ~ age * Sex + (age | Subject)
+##    Data: Orthodont
+## 
+## REML criterion at convergence: 432.6
+## 
+## Scaled residuals: 
+##     Min      1Q  Median      3Q     Max 
+## -3.1694 -0.3862  0.0070  0.4454  3.8490 
+## 
+## Random effects:
+##  Groups   Name        Variance Std.Dev. Corr 
+##  Subject  (Intercept) 5.77449  2.4030        
+##           age         0.03245  0.1801   -0.67
+##  Residual             1.71663  1.3102        
+## Number of obs: 108, groups:  Subject, 27
+## 
+## Fixed effects:
+##               Estimate Std. Error t value
+## (Intercept)   16.34063    1.01825  16.048
+## age            0.78438    0.08598   9.123
+## SexFemale      1.03210    1.59529   0.647
+## age:SexFemale -0.30483    0.13471  -2.263
+## 
+## Correlation of Fixed Effects:
+##             (Intr) age    SexFml
+## age         -0.880              
+## SexFemale   -0.638  0.562       
+## age:SexFeml  0.562 -0.638 -0.880</code></pre>
+</div>
 </div>
 
 
