@@ -453,11 +453,46 @@ data3</code></pre>
 <p>A number after the comma shows this column number (or variable number). Here we show the second column:</p>
 <pre class="r"><code> mtcars[,2] </code></pre>
 <pre><code>##  [1] 6 6 4 6 8 6 8 4 4 6 6 8 8 8 8 8 8 4 4 4 4 8 8 8 8 4 4 4 8 6 8 4</code></pre>
+<p> </p>
+</div>
+<div id="transform-data-from-wide-to-long-format" class="section level5">
+<h5>Transform data from wide to long format</h5>
+<p> </p>
+<p>For analyses of data sets with repeated measurements the data need to be in the so-called “long” format instead of the “wide” format. Data are in wide format if each patient has one row and the repeated measurements are different variables. Data are in the long format if there is one variable for the repeated measurement, and a patient has multiple rows.</p>
+<p>The following dataset <code>data_wide</code> is in the wide format.</p>
+<pre class="r"><code>head(data_wide)</code></pre>
+<pre><code>##   id group  M_1  M_2  M_3  M_4
+## 1  1     1 17.4 29.6 27.4 29.4
+## 2  2     1 17.0 26.9 28.6 11.5
+## 3  3     1 25.3 24.6 20.6 18.5
+## 4  4     1 14.7 30.2 23.3 25.9
+## 5  5     1 17.6 21.5 18.0 18.0
+## 6  6     2 18.1 24.7 21.4 35.2</code></pre>
+<p>It has 10 patients and 6 variables. The variables <code>M_1, M_2, M_3, M_4</code> are a continuous marker, measured at 4 time points.</p>
+<p>Using the library <code>data.table</code> and the function <code>melt()</code> we can transform the wide data into long. The melt function has a few important options: <code>id</code> are the variables that are not time-varying, such as a baseline covariate. <code>measure</code> is the variable that is time-varying. There can be multiple repeated measurements. Using the function <code>patterns()</code>, all variables including <code>M</code> will be included as the repeated measure, so I do not need to type <code>c(M_1, M_2, M_3, M_4)</code>. With <code>value.name</code> the repeated variable is given a new name and <code>variable.name</code> tells us which measurement it is.</p>
+<pre class="r"><code>library(data.table) 
+data_long &lt;- melt(setDT(data_wide), id = c(&#39;id&#39;, &#39;group&#39;),
+                  measure = patterns(&quot;M&quot;), 
+                  value.name = c(&#39;M&#39;), variable.name = &quot;Time&quot;)
+
+levels(data_long$Time) &lt;-  c(1, 2, 3, 4)
+
+data_long &lt;- data_long[order(data_long$id),]
+head(data_long)</code></pre>
+<pre><code>##    id group Time    M
+## 1:  1     1    1 17.4
+## 2:  1     1    2 29.6
+## 3:  1     1    3 27.4
+## 4:  1     1    4 29.4
+## 5:  2     1    1 17.0
+## 6:  2     1    2 26.9</code></pre>
+<p> </p>
 </div>
 </div>
 <div id="graphs2" class="section level2">
 <h2>Advanced graphs</h2>
 <p>Coming soon!</p>
+<p>   </p>
 </div>
 <div id="survival" class="section level2">
 <h2>Survival analysis</h2>
@@ -471,7 +506,7 @@ data3</code></pre>
 <p>In multicenter studies, patients are clustered within centers of the study. In longitudinal studies with repeated measurements per patient, observations from one patient are clustered in that patient. This can influence the analyses of a study, because observations <em>within</em> a cluster might be more correlated than observation <em>between</em> different clusters.</p>
 <p>One framework possible for clustered is the mixed effects model. This is regression model that combines <strong>fixed</strong> (or population) effects with <strong>random</strong> (or subject-specific) effects.</p>
 <p>The graph below visualizes a mixed effects model for repeated measures on two patients (Subject 1 and Subject 2). The thick black line is the population effect estimated by the fixed effects. Through the random effects, every patient has a specific intercept and slope indicated by the dashed lines.</p>
-<p><img src="LearnR2_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
+<p><img src="LearnR2_files/figure-html/unnamed-chunk-15-1.png" width="672" /></p>
 <p> </p>
 <p> </p>
 </div>
@@ -501,18 +536,19 @@ head(Orthodont)</code></pre>
 <pre><code>## distance      age  Subject      Sex 
 ##       27        4       27        2</code></pre>
 <p>We can also see that there are 4 ages at which the distances are measured and two sexes.</p>
-<p>A good way to visualize longitudinal data is with a spaghettiplot. Measurements from the same subject are connected with a line.</p>
+<p>A good way to visualize longitudinal data is with a spaghetti plot. Measurements from the same subject are connected with a line.</p>
 <pre class="r"><code>library(ggplot2)
 p &lt;- ggplot(data = Orthodont) +
   geom_point(aes(x = age, y = distance, group = Subject, colour = Sex)) +
   geom_line(aes(x = age, y = distance, group = Subject, colour = Sex)) +
   theme_classic() 
 p</code></pre>
-<p><img src="LearnR2_files/figure-html/unnamed-chunk-17-1.png" width="672" /></p>
+<p><img src="LearnR2_files/figure-html/unnamed-chunk-20-1.png" width="672" /></p>
 <p>Based on the plot, overall the subjects seem to increase as age increases and Males seem to have a higher distance than Females.</p>
-<p>We fit two mixed effects models, for which the code is similar to a linear regression model. In the fixed effect, we include age, sex and an interaction. In model <code>fm1</code> we estimate random intercepts with the code <code>(1 | Subject)</code>, allowing every subject their own intercept. In model <code>fm2</code> we additionally include random slopes with <code>(age | Subject)</code>.</p>
-<pre class="r"><code>fm1 &lt;- lmer(distance ~ age*Sex + (1 | Subject), data = Orthodont) 
-summary(fm1)</code></pre>
+<p>We fit two mixed effects models, for which the code is similar to a linear regression model. In the fixed effect, we include age, sex and an interaction. In model <code>fm1</code> we estimate random intercepts with the code <code>(1 | Subject)</code>, allowing every subject their own intercept.</p>
+<pre class="r"><code>fm1 &lt;- lmer(distance ~ age*Sex + (1 | Subject), data = Orthodont) </code></pre>
+<p>With the summary command the results of the model can be obtained.</p>
+<pre class="r"><code>summary(fm1)</code></pre>
 <pre><code>## Linear mixed model fit by REML [&#39;lmerMod&#39;]
 ## Formula: distance ~ age * Sex + (1 | Subject)
 ##    Data: Orthodont
@@ -541,37 +577,167 @@ summary(fm1)</code></pre>
 ## age         -0.869              
 ## SexFemale   -0.638  0.555       
 ## age:SexFeml  0.555 -0.638 -0.869</code></pre>
-<pre class="r"><code>fm2 &lt;- lmer(distance ~ age*Sex + (age | Subject), data = Orthodont) 
-summary(fm2)</code></pre>
-<pre><code>## Linear mixed model fit by REML [&#39;lmerMod&#39;]
-## Formula: distance ~ age * Sex + (age | Subject)
+<p>The output provides us with both the random effects, which are estimators of the variance of each random effect (+possible covariances between random effects), and the fixed effects. The fixed effects are the population estimators and can be interpreted similar to the output of a linear regression model.</p>
+<p>In model <code>fm2</code> we additionally include random slopes with <code>(age | Subject)</code>.</p>
+<pre class="r"><code>fm2 &lt;- lmer(distance ~ age*Sex + (age | Subject), data = Orthodont) </code></pre>
+<p>With the `<code>anova()</code> function we can compare the models to see which model provides a better fit of the data</p>
+<pre class="r"><code>anova(fm1, fm2)</code></pre>
+<pre><code>## Data: Orthodont
+## Models:
+## fm1: distance ~ age * Sex + (1 | Subject)
+## fm2: distance ~ age * Sex + (age | Subject)
+##     npar    AIC    BIC  logLik deviance  Chisq Df Pr(&gt;Chisq)
+## fm1    6 440.64 456.73 -214.32   428.64                     
+## fm2    8 443.81 465.26 -213.90   427.81 0.8331  2     0.6593</code></pre>
+<p>From the AIC measure (smaller is better) we conclude that the random intercepts model provides a better fit of the data.</p>
+<p>An important assumption of the mixed model is the normality of the residuals. They can be evaluated with the following code:</p>
+<pre class="r"><code>model &lt;- fm1
+
+par(mfrow = c(2,2))
+
+# Are the residuals random noise?
+residuals &lt;- resid(model)
+plot(fitted(model), residuals)
+abline(0,0)
+
+# Is the response variable a reasonable linear function
+# of the fitted values?
+plot(fitted(model), Orthodont$distance)
+
+# Are the residuals normally distributed?
+qqnorm(residuals)
+qqline(residuals)
+hist(residuals)</code></pre>
+<p><img src="LearnR2_files/figure-html/unnamed-chunk-25-1.png" width="672" /></p>
+<p>There is a slight deviation from normality in the tails of the residuals, but not too much.</p>
+<p>We can make an effect plot to visualize the model. First we make a data set with the different levels of the covariates called <code>newdat</code></p>
+<pre class="r"><code>newdat &lt;- expand.grid(age = c(8,10,12,14), 
+                      Sex = c(&quot;Male&quot;, &quot;Female&quot;))</code></pre>
+<p>Then we predict the model on this new data set. To obtain standard errors, the package <code>AICcmodavg</code> is used. The option <code>level = 0</code> indicates that we are making population level predictions.</p>
+<pre class="r"><code>library(AICcmodavg)
+pred &lt;- as.data.frame(predictSE(fm1, newdata = newdat, se.fit = TRUE, level = 0,
+                                print.matrix = T))</code></pre>
+<p>We can add the predictions to he <code>newdat</code> data set and calculate 95% confidence intervals</p>
+<pre class="r"><code>newdat$pred &lt;- pred$fit
+
+# Get the lower and upper confidence intervals
+newdat$LO &lt;- pred$fit - 1.96 * pred$se.fit
+newdat$HI &lt;- pred$fit + 1.96 * pred$se.fit
+newdat$se &lt;- pred$se.fit</code></pre>
+<p>This is how the first 6 rows of <code>newdat</code> look like now.</p>
+<pre class="r"><code>head(newdat)</code></pre>
+<pre><code>##   age    Sex     pred       LO       HI        se
+## 1   8   Male 22.61563 21.55967 23.67158 0.5387528
+## 2  10   Male 24.18438 23.21978 25.14897 0.4921414
+## 3  12   Male 25.75313 24.78853 26.71772 0.4921414
+## 4  14   Male 27.32187 26.26592 28.37783 0.5387528
+## 5   8 Female 21.20909 19.93556 22.48262 0.6497603
+## 6  10 Female 22.16818 21.00483 23.33153 0.5935449</code></pre>
+<p>These predicted values can be added to the spaghettiplot made earlier</p>
+<pre class="r"><code>p &lt;- ggplot(data = Orthodont) +
+    geom_point(aes(x = age, y = distance, group = Subject, colour = Sex)) +
+    geom_line(aes(x = age, y = distance, group = Subject, colour = Sex)) +
+    geom_line(data = newdat, aes(x = age, y = pred, colour = Sex),  lwd = 2) +
+    geom_ribbon(data = newdat, aes(x = age, ymin = LO, ymax = HI, fill = Sex),  alpha = 0.25) +
+    theme_classic() 
+p</code></pre>
+<p><img src="LearnR2_files/figure-html/unnamed-chunk-30-1.png" width="672" /> From the plot is each clear that the average trajectory of males is slightly higher than females. The lines run almost parallel, but the males seem to be growing slightly faster.</p>
+<p>With the package <code>lmerTest</code> p-values are added to the summary of the model.</p>
+<pre class="r"><code>library(lmerTest)</code></pre>
+<pre class="r"><code>fm1 &lt;- lmer(distance ~ age*Sex + (1 | Subject), data = Orthodont) 
+summary(fm1)</code></pre>
+<pre><code>## Linear mixed model fit by REML. t-tests use Satterthwaite&#39;s method [
+## lmerModLmerTest]
+## Formula: distance ~ age * Sex + (1 | Subject)
 ##    Data: Orthodont
 ## 
-## REML criterion at convergence: 432.6
+## REML criterion at convergence: 433.8
 ## 
 ## Scaled residuals: 
 ##     Min      1Q  Median      3Q     Max 
-## -3.1694 -0.3862  0.0070  0.4454  3.8490 
+## -3.5980 -0.4546  0.0158  0.5024  3.6862 
 ## 
 ## Random effects:
-##  Groups   Name        Variance Std.Dev. Corr 
-##  Subject  (Intercept) 5.77449  2.4030        
-##           age         0.03245  0.1801   -0.67
-##  Residual             1.71663  1.3102        
+##  Groups   Name        Variance Std.Dev.
+##  Subject  (Intercept) 3.299    1.816   
+##  Residual             1.922    1.386   
 ## Number of obs: 108, groups:  Subject, 27
 ## 
 ## Fixed effects:
-##               Estimate Std. Error t value
-## (Intercept)   16.34063    1.01825  16.048
-## age            0.78438    0.08598   9.123
-## SexFemale      1.03210    1.59529   0.647
-## age:SexFemale -0.30483    0.13471  -2.263
+##               Estimate Std. Error       df t value Pr(&gt;|t|)    
+## (Intercept)    16.3406     0.9813 103.9864  16.652  &lt; 2e-16 ***
+## age             0.7844     0.0775  79.0000  10.121 6.44e-16 ***
+## SexFemale       1.0321     1.5374 103.9864   0.671   0.5035    
+## age:SexFemale  -0.3048     0.1214  79.0000  -2.511   0.0141 *  
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
 ## 
 ## Correlation of Fixed Effects:
 ##             (Intr) age    SexFml
-## age         -0.880              
-## SexFemale   -0.638  0.562       
-## age:SexFeml  0.562 -0.638 -0.880</code></pre>
+## age         -0.869              
+## SexFemale   -0.638  0.555       
+## age:SexFeml  0.555 -0.638 -0.869</code></pre>
+<p>At baseline there is no significant difference between males and females. Age is significant, meaning that overall subjects increase with age. The significant interaction denotes the deviation in parallel line seen in the graph.</p>
+<p>The package <code>emmeans</code> can be used to test contrasts and estimate marginal means.</p>
+<pre class="r"><code>library(emmeans)</code></pre>
+<p>Examples of use of the package are:</p>
+<ol style="list-style-type: decimal">
+<li>Compare the difference between male and female at all levels of age</li>
+</ol>
+<pre class="r"><code>emmeans(fm1, specs = pairwise ~  Sex | age, at = list(age = c(8, 10, 12, 14)))$contrasts</code></pre>
+<pre><code>## age =  8:
+##  contrast      estimate    SE   df t.ratio p.value
+##  Male - Female     1.41 0.844 37.1 1.666   0.1041 
+## 
+## age = 10:
+##  contrast      estimate    SE   df t.ratio p.value
+##  Male - Female     2.02 0.771 26.3 2.615   0.0146 
+## 
+## age = 12:
+##  contrast      estimate    SE   df t.ratio p.value
+##  Male - Female     2.63 0.771 26.3 3.406   0.0021 
+## 
+## age = 14:
+##  contrast      estimate    SE   df t.ratio p.value
+##  Male - Female     3.24 0.844 37.1 3.833   0.0005 
+## 
+## Degrees-of-freedom method: kenward-roger</code></pre>
+<ol start="2" style="list-style-type: decimal">
+<li>Estimate the marginal means of males and female at age = 10</li>
+</ol>
+<pre class="r"><code>emmeans(fm1, specs = pairwise ~  Sex | age, at = c(age = 10))$emmeans</code></pre>
+<pre><code>## age = 10:
+##  Sex    emmean    SE   df lower.CL upper.CL
+##  Male     24.2 0.492 26.3     23.2     25.2
+##  Female   22.2 0.594 26.3     20.9     23.4
+## 
+## Degrees-of-freedom method: kenward-roger 
+## Confidence level used: 0.95</code></pre>
+<ol start="3" style="list-style-type: decimal">
+<li>Compare the overall value at age 12 with age 14:</li>
+</ol>
+<pre class="r"><code>emmeans(fm1, specs = pairwise ~  age , at = list(age = c(12, 14)))$contrasts</code></pre>
+<pre><code>##  contrast estimate    SE df t.ratio p.value
+##  12 - 14     -1.26 0.121 79 -10.409 &lt;.0001 
+## 
+## Results are averaged over the levels of: Sex 
+## Degrees-of-freedom method: kenward-roger</code></pre>
+<ol start="4" style="list-style-type: decimal">
+<li>Estimate the marginal means at age 8 and 14 for males and females</li>
+</ol>
+<pre class="r"><code>emmeans(fm1, specs = pairwise ~  age | Sex, at = list(age = c(8, 14)))$emmeans</code></pre>
+<pre><code>## Sex = Male:
+##  age emmean    SE   df lower.CL upper.CL
+##    8   22.6 0.539 37.1     21.5     23.7
+##   14   27.3 0.539 37.1     26.2     28.4
+## 
+## Sex = Female:
+##  age emmean    SE   df lower.CL upper.CL
+##    8   21.2 0.650 37.1     19.9     22.5
+##   14   24.1 0.650 37.1     22.8     25.4
+## 
+## Degrees-of-freedom method: kenward-roger 
+## Confidence level used: 0.95</code></pre>
 </div>
 </div>
 

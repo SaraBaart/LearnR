@@ -124,14 +124,55 @@ A number after the comma shows this column number (or variable number). Here we 
  mtcars[,2] 
 ```  
 
+&nbsp;
+
+##### Transform data from wide to long format
+&nbsp;
+
+For analyses of data sets with repeated measurements the data need to be in the so-called "long" format instead of the "wide" format. 
+Data are in wide format if each patient has one row and the repeated measurements are different variables. Data are in the long format if there is one variable for the repeated measurement, and a patient has multiple rows. 
+
+The following dataset `data_wide` is in the wide format.   
+```{r echo = F, eval=T} 
+id <- 1:10
+group <- c(rep(1,5), rep(2,5))
+M_1 <- round(rnorm(10, mean = 20, sd = 5),1)
+M_2 <- round(rnorm(10, mean = 22, sd = 5),1)
+M_3 <- round(rnorm(10, mean = 24, sd = 5),1)
+M_4 <- round(rnorm(10, mean = 26, sd = 5),1)
+data_wide <- as.data.frame(cbind(id, group, M_1, M_2, M_3, M_4))
+``` 
+
+```{r echo = T, eval=T} 
+head(data_wide)
+```
+
+It has 10 patients and 6 variables. The variables `M_1, M_2, M_3, M_4` are a continuous marker, measured at 4 time points. 
 
 
+Using the library `data.table` and the function `melt()` we can transform the wide data into long. The melt function has a few important options: `id` are the variables that are not time-varying, such as a baseline covariate. `measure` is the variable that is time-varying. There can be multiple repeated measurements. Using the function `patterns()`, all variables including `M` will be included as the repeated measure, so I do not need to type `c(M_1, M_2, M_3, M_4)`. With `value.name` the repeated variable is given a new name and `variable.name` tells us which measurement it is.
+
+```{r echo = T, eval=T}
+library(data.table) 
+data_long <- melt(setDT(data_wide), id = c('id', 'group'),
+                  measure = patterns("M"), 
+                  value.name = c('M'), variable.name = "Time")
+
+levels(data_long$Time) <-  c(1, 2, 3, 4)
+
+data_long <- data_long[order(data_long$id),]
+head(data_long)
+```
+
+&nbsp;
 
 ## Advanced graphs {#graphs2}
  
  Coming soon!
  
- 
+ &nbsp;
+&nbsp;
+
 ## Survival analysis {#survival}
 
 A comprehensive guide to survival analysis in R can be found here: 
@@ -203,9 +244,9 @@ sapply(Orthodont, function(x) length(unique(x)))
 
 We can also see that there are 4 ages at which the distances are measured and two sexes. 
 
-A good way to visualize longitudinal data is with a spaghettiplot. Measurements from the same subject are connected with a line.
+A good way to visualize longitudinal data is with a spaghetti plot. Measurements from the same subject are connected with a line.
 
-```{r echo = T, eval=T, message = F}
+```{r echo = T, eval=T, message = F, warning = F}
 library(ggplot2)
 p <- ggplot(data = Orthodont) +
   geom_point(aes(x = age, y = distance, group = Subject, colour = Sex)) +
@@ -217,14 +258,151 @@ p
 
 Based on the plot, overall the subjects seem to increase as age increases and Males seem to have a higher distance than Females. 
 
-We fit two mixed effects models, for which the code is similar to a linear regression model. In the fixed effect, we include age, sex and an interaction. In model `fm1` we estimate random intercepts with the code `(1 | Subject)`, allowing every subject their own intercept. In model `fm2` we additionally include random slopes with `(age | Subject)`. 
+We fit two mixed effects models, for which the code is similar to a linear regression model. In the fixed effect, we include age, sex and an interaction. In model `fm1` we estimate random intercepts with the code `(1 | Subject)`, allowing every subject their own intercept.
+
+```{r echo = T, eval=T, message = F}
+
+fm1 <- lmer(distance ~ age*Sex + (1 | Subject), data = Orthodont) 
+
+
+```
+
+With the summary command the results of the model can be obtained.
+
+```{r echo = T, eval=T, message = F}
+
+summary(fm1)
+
+```
+The output provides us with both the random effects, which are estimators of the variance of each random effect (+possible covariances between random effects), and the fixed effects. The fixed effects are the population estimators and can be interpreted similar to the output of a linear regression model. 
+
+
+ In model `fm2` we additionally include random slopes with `(age | Subject)`. 
+
+```{r echo = T, eval=T, message = F}
+fm2 <- lmer(distance ~ age*Sex + (age | Subject), data = Orthodont) 
+```
+
+With the ``anova()` function we can compare the models to see which model provides a better fit of the data
+```{r echo = T, eval=T, message = F}
+anova(fm1, fm2)
+```
+
+From the AIC measure (smaller is better) we conclude that the random intercepts model provides a better fit of the data. 
+
+An important assumption of the mixed model is the normality of the residuals. They can be evaluated with the following code:
+
+```{r echo = T, eval=T, message = F}
+model <- fm1
+
+par(mfrow = c(2,2))
+
+# Are the residuals random noise?
+residuals <- resid(model)
+plot(fitted(model), residuals)
+abline(0,0)
+
+# Is the response variable a reasonable linear function
+# of the fitted values?
+plot(fitted(model), Orthodont$distance)
+
+# Are the residuals normally distributed?
+qqnorm(residuals)
+qqline(residuals)
+hist(residuals)
+```
+
+
+There is a slight deviation from normality in the tails of the residuals, but not too much.
+
+We can make an effect plot to visualize the model. 
+First we make a data set with the different levels of the covariates called `newdat`
+
+```{r echo = T, eval=T, message = F}
+newdat <- expand.grid(age = c(8,10,12,14), 
+                      Sex = c("Male", "Female"))
+```
+
+Then we predict the model on this new data set. To obtain standard errors, the package `AICcmodavg` is used. The option `level = 0` indicates that we are making population level predictions. 
+
+```{r echo = T, eval=T, message = F}
+library(AICcmodavg)
+pred <- as.data.frame(predictSE(fm1, newdata = newdat, se.fit = TRUE, level = 0,
+                                print.matrix = T))
+```
+
+We can add the predictions to he `newdat` data set and calculate 95\% confidence intervals
+
+```{r echo = T, eval=T, message = F}
+
+newdat$pred <- pred$fit
+
+# Get the lower and upper confidence intervals
+newdat$LO <- pred$fit - 1.96 * pred$se.fit
+newdat$HI <- pred$fit + 1.96 * pred$se.fit
+newdat$se <- pred$se.fit
+
+```
+
+This is how the first 6 rows of `newdat` look like now.
+
+```{r echo = T, eval=T, message = F}
+head(newdat)
+```
+
+These predicted values can be added to the spaghettiplot made earlier
+
+```{r echo = T, eval=T, message = F}
+p <- ggplot(data = Orthodont) +
+    geom_point(aes(x = age, y = distance, group = Subject, colour = Sex)) +
+    geom_line(aes(x = age, y = distance, group = Subject, colour = Sex)) +
+    geom_line(data = newdat, aes(x = age, y = pred, colour = Sex),  lwd = 2) +
+    geom_ribbon(data = newdat, aes(x = age, ymin = LO, ymax = HI, fill = Sex),  alpha = 0.25) +
+    theme_classic() 
+p
+```
+From the plot is each clear that the average trajectory of males is slightly higher than females. The lines run almost parallel, but the males seem to be growing slightly faster. 
+
+With the package `lmerTest` p-values are added to the summary of the model.
+
+```{r echo = T, eval=T, message = F}
+library(lmerTest)
+```
 
 ```{r echo = T, eval=T, message = F}
 
 fm1 <- lmer(distance ~ age*Sex + (1 | Subject), data = Orthodont) 
 summary(fm1)
+```
+
+At baseline there is no significant difference between males and females. Age is significant, meaning that overall subjects increase with age. The significant interaction denotes the deviation in parallel line seen in the graph.
+
+The package `emmeans` can be used to test contrasts and estimate marginal means.
+
+```{r echo = T, eval=T, message = F}
+library(emmeans)
+```
+
+ Examples of use of the package are:
+ 
+1) Compare the difference between male and female at all levels of age
+```{r echo = T, eval=T, message = F}
+emmeans(fm1, specs = pairwise ~  Sex | age, at = list(age = c(8, 10, 12, 14)))$contrasts
+```
+
+2) Estimate the marginal means of males and female at age = 10
+```{r echo = T, eval=T, message = F}
+emmeans(fm1, specs = pairwise ~  Sex | age, at = c(age = 10))$emmeans
+```
 
 
-fm2 <- lmer(distance ~ age*Sex + (age | Subject), data = Orthodont) 
-summary(fm2)
+3) Compare the overall value at age 12 with age 14:
+```{r echo = T, eval=T, message = F}
+emmeans(fm1, specs = pairwise ~  age , at = list(age = c(12, 14)))$contrasts
+```
+
+4) Estimate the marginal means at age 8 and 14 for males and females
+
+```{r echo = T, eval=T, message = F}
+emmeans(fm1, specs = pairwise ~  age | Sex, at = list(age = c(8, 14)))$emmeans
 ```
