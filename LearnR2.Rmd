@@ -182,7 +182,7 @@ A comprehensive guide to survival analysis in R can be found here:
  
 ## Mixed effects models {#mixedmodels}
 
-#### Mixed models in general
+### Mixed models in general
 
 One of the assumptions of (linear) regression models is that the observations are independent of each other. This assumptions does not hold in situations of *clustered* or *hierarchical* data.
 
@@ -211,7 +211,8 @@ legend("topleft", legend = c("Subject 1", "Subject 2"), pch = c(19, 1), bty = "n
 
 &nbsp;
 
-#### Mixed models in R
+
+### Install the package(s)
 
 Two libraries are used most often for mixed effects models in R; `nlme` and `lme4`. Here I will use `lme4`for the analyses, however a data set available in `nlme` is used as an example.
 
@@ -244,6 +245,8 @@ sapply(Orthodont, function(x) length(unique(x)))
 
 We can also see that there are 4 ages at which the distances are measured and two sexes. 
 
+### Visualize longitudinal data
+
 A good way to visualize longitudinal data is with a spaghetti plot. Measurements from the same subject are connected with a line.
 
 ```{r echo = T, eval=T, message = F, warning = F}
@@ -258,7 +261,9 @@ p
 
 Based on the plot, overall the subjects seem to increase as age increases and Males seem to have a higher distance than Females. 
 
-We fit two mixed effects models, for which the code is similar to a linear regression model. In the fixed effect, we include age, sex and an interaction. In model `fm1` we estimate random intercepts with the code `(1 | Subject)`, allowing every subject their own intercept.
+### Fit the model
+
+We fit the mixed effects model, for which the code is similar to a linear regression model. In the fixed effect, we include age, sex and an interaction. In model `fm1` we estimate random intercepts with the code `(1 | Subject)`, allowing every subject their own intercept.
 
 ```{r echo = T, eval=T, message = F}
 
@@ -270,14 +275,13 @@ fm1 <- lmer(distance ~ age*Sex + (1 | Subject), data = Orthodont)
 With the summary command the results of the model can be obtained.
 
 ```{r echo = T, eval=T, message = F}
-
 summary(fm1)
-
 ```
 The output provides us with both the random effects, which are estimators of the variance of each random effect (+possible covariances between random effects), and the fixed effects. The fixed effects are the population estimators and can be interpreted similar to the output of a linear regression model. 
 
+### Compare two models
 
- In model `fm2` we additionally include random slopes with `(age | Subject)`. 
+In model `fm2` we additionally include random slopes with `(age | Subject)`. 
 
 ```{r echo = T, eval=T, message = F}
 fm2 <- lmer(distance ~ age*Sex + (age | Subject), data = Orthodont) 
@@ -289,6 +293,8 @@ anova(fm1, fm2)
 ```
 
 From the AIC measure (smaller is better) we conclude that the random intercepts model provides a better fit of the data. 
+
+### Evaluate the residuals
 
 An important assumption of the mixed model is the normality of the residuals. They can be evaluated with the following code:
 
@@ -314,6 +320,8 @@ hist(residuals)
 
 
 There is a slight deviation from normality in the tails of the residuals, but not too much.
+
+### Make predictions and an effect plot
 
 We can make an effect plot to visualize the model. 
 First we make a data set with the different levels of the covariates called `newdat`
@@ -376,6 +384,8 @@ summary(fm1)
 ```
 
 At baseline there is no significant difference between males and females. Age is significant, meaning that overall subjects increase with age. The significant interaction denotes the deviation in parallel line seen in the graph.
+
+### Test contrasts
 
 The package `emmeans` can be used to test contrasts and estimate marginal means.
 
