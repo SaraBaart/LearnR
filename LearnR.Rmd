@@ -5,6 +5,7 @@ output:
     toc: TRUE
     toc_float: TRUE
     toc_depth: 4
+
 ---
 
 ```{r setup, include=FALSE}
@@ -23,6 +24,8 @@ The topics in this document are:
 * [Packages](#packages) 
 
 * [Importing data sets](#importing)
+
+* [Base R vs Tidyverse](#basertidy)
 
 * [Data management](#datamanagement)
 
@@ -110,6 +113,53 @@ data <- read_excel("C:/Documents/data.xlsx")
 
 #### Importing data with the menu
 Data can also be loaded via the menu. Go to File -> Import Dataset -> choose your filetype.
+
+&nbsp;
+&nbsp;
+
+## Base R vs Tidyverse {#basertidy}
+
+Base is the base package in R, that contains a lot of the basic functions. Examples are `summary()` to get some summary statistics and `plot()` to make plots. 
+
+There exists a collection of packages, together called the Tidyverse, that allows you to do a lot of the base R things in a slightly different way. For example, the package `dplyr` is used for data management and with `ggplot()` you can make beautiful graphs. The Tidyverse has a bit of different style of coding (it has its own 'grammar') than most R functions. 
+
+Some people prefer working with their data with the Tidyverse, other prefer base R. In these tutorials, I will use base R for the data management and graphs in the *Getting Started* tutorials, and show some Tidyverse functions in the *Advanced options* tutorials. 
+
+&nbsp;
+&nbsp;
+
+#### Small example
+
+In the two code chunks below, I demonstrate the difference between the two styles. The codes give the means of an outcome (weight of chickens) for different groups (feed type). 
+
+It is not necessary to understand the code yet! This example is just to demonstrate how two different pieces of code, give the same result.
+
+&nbsp;
+
+With base R
+```{r echo = T, eval=T}
+data(chickwts)
+
+aggregate(chickwts$weight, list(chickwts$feed), FUN=mean) 
+
+```
+
+&nbsp;
+
+With `dplyr` from the Tidyverse
+
+```{r echo = T, eval = T, message = F, warning = F}
+library(dplyr)
+data(chickwts)
+
+chickwts %>%
+  group_by(feed) %>%
+  summarize(Mean = mean(weight)) 
+
+```
+
+The main difference between the styles, is that with the `dplyr` code, things elements of the code are added stepwise, whereas with the base R, everything is handled at the same time. 
+
 
 &nbsp;
 &nbsp;

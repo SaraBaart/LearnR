@@ -370,6 +370,7 @@ div.tocify {
 <ul>
 <li><p><a href="#packages">Packages</a></p></li>
 <li><p><a href="#importing">Importing data sets</a></p></li>
+<li><p><a href="#basertidy">Base R vs Tidyverse</a></p></li>
 <li><p><a href="#datamanagement">Data management</a></p></li>
 <li><p><a href="#graphs">Graphs</a></p></li>
 <li><p><a href="#descriptives">Descriptives</a></p></li>
@@ -425,6 +426,49 @@ library(lattice)</code></pre>
 <div id="importing-data-with-the-menu" class="section level4">
 <h4>Importing data with the menu</h4>
 <p>Data can also be loaded via the menu. Go to File -&gt; Import Dataset -&gt; choose your filetype.</p>
+<p>   </p>
+</div>
+</div>
+<div id="basertidy" class="section level2">
+<h2>Base R vs Tidyverse</h2>
+<p>Base is the base package in R, that contains a lot of the basic functions. Examples are <code>summary()</code> to get some summary statistics and <code>plot()</code> to make plots.</p>
+<p>There exists a collection of packages, together called the Tidyverse, that allows you to do a lot of the base R things in a slightly different way. For example, the package <code>dplyr</code> is used for data management and with <code>ggplot()</code> you can make beautiful graphs. The Tidyverse has a bit of different style of coding (it has its own ‘grammar’) than most R functions.</p>
+<p>Some people prefer working with their data with the Tidyverse, other prefer base R. In these tutorials, I will use base R for the data management and graphs in the <em>Getting Started</em> tutorials, and show some Tidyverse functions in the <em>Advanced options</em> tutorials.</p>
+<p>   </p>
+<div id="small-example" class="section level4">
+<h4>Small example</h4>
+<p>In the two code chunks below, I demonstrate the difference between the two styles. The codes give the means of an outcome (weight of chickens) for different groups (feed type).</p>
+<p>It is not necessary to understand the code yet! This example is just to demonstrate how two different pieces of code, give the same result.</p>
+<p> </p>
+<p>With base R</p>
+<pre class="r"><code>data(chickwts)
+
+aggregate(chickwts$weight, list(chickwts$feed), FUN=mean) </code></pre>
+<pre><code>##     Group.1        x
+## 1    casein 323.5833
+## 2 horsebean 160.2000
+## 3   linseed 218.7500
+## 4  meatmeal 276.9091
+## 5   soybean 246.4286
+## 6 sunflower 328.9167</code></pre>
+<p> </p>
+<p>With <code>dplyr</code> from the Tidyverse</p>
+<pre class="r"><code>library(dplyr)
+data(chickwts)
+
+chickwts %&gt;%
+  group_by(feed) %&gt;%
+  summarize(Mean = mean(weight)) </code></pre>
+<pre><code>## # A tibble: 6 x 2
+##   feed       Mean
+##   &lt;fct&gt;     &lt;dbl&gt;
+## 1 casein     324.
+## 2 horsebean  160.
+## 3 linseed    219.
+## 4 meatmeal   277.
+## 5 soybean    246.
+## 6 sunflower  329.</code></pre>
+<p>The main difference between the styles, is that with the <code>dplyr</code> code, things elements of the code are added stepwise, whereas with the base R, everything is handled at the same time.</p>
 <p>   </p>
 </div>
 </div>
@@ -551,25 +595,25 @@ data &lt;- mtcars</code></pre>
 <h2>Graphs</h2>
 <p>Make a simple histogram (mpg = continuous variable)</p>
 <pre class="r"><code>hist(data$mpg)</code></pre>
-<p><img src="LearnR_files/figure-html/unnamed-chunk-20-1.png" width="672" /></p>
+<p><img src="LearnR_files/figure-html/unnamed-chunk-22-1.png" width="672" /></p>
 <p>Make a simple scatter plot (mpg &amp; disp = continuous variables)</p>
 <pre class="r"><code>plot(data$mpg ~ data$disp)</code></pre>
-<p><img src="LearnR_files/figure-html/unnamed-chunk-21-1.png" width="672" /></p>
+<p><img src="LearnR_files/figure-html/unnamed-chunk-23-1.png" width="672" /></p>
 <p>Make a simple boxplot (mpg = continuous variable, cyl = categorical variable)</p>
 <pre class="r"><code>boxplot(data$mpg ~ data$cyl)</code></pre>
-<p><img src="LearnR_files/figure-html/unnamed-chunk-22-1.png" width="672" /></p>
+<p><img src="LearnR_files/figure-html/unnamed-chunk-24-1.png" width="672" /></p>
 <p>Improve the scatterplot by changing the color, adding a title, etc.</p>
 <pre class="r"><code>plot(data$mpg ~ mtcars$disp, xlab = &quot;Disp&quot;, ylab = &quot;Mpg&quot;, 
      xlim = c(75, 475), ylim = c(10, 35),
      main = &quot;Scatterplot Mpg - Disp&quot;, col = &quot;red&quot;, pch = 20, cex = 1.5)</code></pre>
-<p><img src="LearnR_files/figure-html/unnamed-chunk-23-1.png" width="672" /></p>
+<p><img src="LearnR_files/figure-html/unnamed-chunk-25-1.png" width="672" /></p>
 <p>For two plots next to each other we can use the function <code>par(mfrow = c(1,2))</code></p>
 <pre class="r"><code>par(mfrow = c(1,2))
 plot(data$mpg ~ data$disp)
 plot(data$mpg ~ mtcars$disp, xlab = &quot;Disp&quot;, ylab = &quot;Mpg&quot;, 
      xlim = c(75, 475), ylim = c(10, 35),
      main = &quot;Scatterplot Mpg - Disp&quot;, col = &quot;red&quot;, pch = 20, cex = 1.5)</code></pre>
-<p><img src="LearnR_files/figure-html/unnamed-chunk-24-1.png" width="672" /></p>
+<p><img src="LearnR_files/figure-html/unnamed-chunk-26-1.png" width="672" /></p>
 <p>  To learn how to use ggplot2 for graphics, you can go to <a href="LearnR2.html#graphs2">Advanced graphs</a>.</p>
 <p>   </p>
 </div>
@@ -621,7 +665,7 @@ plot(data$mpg ~ mtcars$disp, xlab = &quot;Disp&quot;, ylab = &quot;Mpg&quot;,
 hist(data$drat)
 qqnorm(data$drat)
 qqline(data$drat, col = &quot;steelblue&quot;)</code></pre>
-<p><img src="LearnR_files/figure-html/unnamed-chunk-30-1.png" width="672" /></p>
+<p><img src="LearnR_files/figure-html/unnamed-chunk-32-1.png" width="672" /></p>
 <p>This looks pretty normal, so we can use a t-test to analyze these data.</p>
 <pre class="r"><code>t.test(drat ~ am, data = data)</code></pre>
 <pre><code>## 
@@ -649,7 +693,7 @@ test$p.value</code></pre>
 hist(data$disp)
 qqnorm(data$disp)
 qqline(data$disp, col = &quot;steelblue&quot;)</code></pre>
-<p><img src="LearnR_files/figure-html/unnamed-chunk-33-1.png" width="672" /></p>
+<p><img src="LearnR_files/figure-html/unnamed-chunk-35-1.png" width="672" /></p>
 <p>So, we use the code <code>wilcox.test</code></p>
 <pre class="r"><code>wilcox.test(disp ~ am, data = data)</code></pre>
 <pre><code>## 
@@ -669,7 +713,7 @@ qqline(data$disp, col = &quot;steelblue&quot;)</code></pre>
 ## 15 12  5</code></pre>
 <p>We will use ANOVA to test if “drat” is similar over the “gear” groups. We visualize the data first:</p>
 <pre class="r"><code>boxplot(data$drat ~ data$gear)</code></pre>
-<p><img src="LearnR_files/figure-html/unnamed-chunk-36-1.png" width="672" /></p>
+<p><img src="LearnR_files/figure-html/unnamed-chunk-38-1.png" width="672" /></p>
 <p>There appears to be a big difference, especially in group 3. For the ANOVA procedure in R it is better if the grouping variable is a “factor” instead of “numeric”, so we make a new variable: gear.factor.</p>
 <pre class="r"><code>str(data$gear)</code></pre>
 <pre><code>##  num [1:32] 4 4 4 3 3 3 3 4 4 4 ...</code></pre>
@@ -702,7 +746,7 @@ summary(aov1)</code></pre>
 <h4>Kruskal-Wallis test</h4>
 <p>The non-paramtric version of the ANOVA is the Kruskal-Wallis test.</p>
 <pre class="r"><code>boxplot(data$disp ~ data$gear.factor)</code></pre>
-<p><img src="LearnR_files/figure-html/unnamed-chunk-40-1.png" width="672" /></p>
+<p><img src="LearnR_files/figure-html/unnamed-chunk-42-1.png" width="672" /></p>
 <pre class="r"><code>kruskal.test(disp ~ gear.factor, data = data)</code></pre>
 <pre><code>## 
 ##  Kruskal-Wallis rank sum test
@@ -736,7 +780,7 @@ tab</code></pre>
 <h4>Correlations</h4>
 <p>Correlations are used for two continuous variables. We already made a scatterplot of “mpg” and “disp”.</p>
 <pre class="r"><code>plot(data$mpg ~ data$disp)</code></pre>
-<p><img src="LearnR_files/figure-html/unnamed-chunk-44-1.png" width="672" /></p>
+<p><img src="LearnR_files/figure-html/unnamed-chunk-46-1.png" width="672" /></p>
 <p>There seems to be a strong negative correlation between the variables. Is it significant?</p>
 <pre class="r"><code>cor.test(data$disp, data$mpg, method = &quot;spearman&quot;)</code></pre>
 <pre><code>## 
@@ -759,7 +803,7 @@ tab</code></pre>
 <h4>Linear regression</h4>
 <p>In regression we like to explain how one variable (x) influences changes in a second variable (y). Let’s start with a scatterplot for “drat” and “disp”:</p>
 <pre class="r"><code>plot(drat ~ disp, data = data)</code></pre>
-<p><img src="LearnR_files/figure-html/unnamed-chunk-46-1.png" width="672" />  </p>
+<p><img src="LearnR_files/figure-html/unnamed-chunk-48-1.png" width="672" />  </p>
 <p>With the regression model we can estimate how unit-value in x (disp) impact a change in y (drat): The model is estimated with <code>lm()</code>. <code>summary()</code> prints a summary of the model.</p>
 <pre class="r"><code>m1 &lt;- lm(drat ~ disp, data = data)
 summary(m1)</code></pre>
@@ -791,7 +835,7 @@ summary(m1)</code></pre>
 <p>To trust the results of the model, we need to validate the assumptions. Normality and homoskedasticity of the residuals can be checked by making plots.</p>
 <pre class="r"><code>par(mfrow = c(2,2))
 plot(m1)</code></pre>
-<p><img src="LearnR_files/figure-html/unnamed-chunk-49-1.png" width="672" /></p>
+<p><img src="LearnR_files/figure-html/unnamed-chunk-51-1.png" width="672" /></p>
 <p>We look mainly at the two upper plots. With the first we can check whether the residuals from a noisy cloud of points. The qq-plot in the second graph can show whether the residuals follow a normal distribution. No serious deviations here.  </p>
 <p>Multiple independent (x) variables can be added to the model.</p>
 <pre class="r"><code>m2 &lt;- lm(drat ~ disp + mpg + vs, data = data)
