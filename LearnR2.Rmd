@@ -166,6 +166,13 @@ head(data_long)
 
 &nbsp;
 
+#### dplyr
+
+Cheatsheet for the dplyr package from the tidyverse:
+
+https://nyu-cdsc.github.io/learningr/assets/data-transformation.pdf
+
+
 ## Advanced graphs {#graphs2}
  
  Coming soon!
